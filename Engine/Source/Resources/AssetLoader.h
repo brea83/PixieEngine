@@ -29,7 +29,7 @@ namespace Pixie
 		static std::shared_ptr<Texture> LoadTexture(const std::string& filePath, TextureType type = TextureType::Diffuse);
 
 		static std::filesystem::path CreatePrefab(GameObject& baseObject);
-		static GameObject LoadPrefab(const std::filesystem::path filePath, Scene* scene);
+		static GameObject LoadPrefab(const std::filesystem::path filePath, std::shared_ptr<Scene> scene);
 		static bool LoadPrefab(const std::filesystem::path filePath, GameObject& rootObject);
 
 		//static 
@@ -56,7 +56,7 @@ namespace Pixie
 
 		//fbx Importing functions 
 
-		static void ProcessNode(GameObject& nodeObject, aiNode* node, const aiScene* assimpScene, Scene* gameScene, const std::string rootName);
+		static void ProcessNode(GameObject& nodeObject, aiNode* node, const aiScene* assimpScene, std::shared_ptr<Scene> gameScene, const std::string rootName);
 		//static GameObject ProcessNodeRecursive(aiNode* node, const aiScene* assimpScene, Scene* gameScene);
 		//static std::shared_ptr<Mesh> LoadMesh(aiMesh& mesh, const aiScene& assimpScene);
 		static void ProcessTransform(aiMatrix4x4 nodeMatrix, TransformComponent& localTransform);

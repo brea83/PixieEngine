@@ -13,7 +13,7 @@
 
 namespace Pixie
 {
-	bool DetailsViewPanel::Draw(Scene* scene, std::shared_ptr<GameObject> selected)
+	bool DetailsViewPanel::Draw(std::shared_ptr<Scene> scene, std::shared_ptr<GameObject> selected)
 	{
 
 		ImGui::Begin("Details View");
@@ -315,7 +315,7 @@ namespace Pixie
 		return bValueSubmitted;
 	}
 
-	void DetailsViewPanel::DrawComponents(Scene* scene, GameObject& selected)
+	void DetailsViewPanel::DrawComponents(std::shared_ptr<Scene> scene, GameObject& selected)
 	{
 		entt::registry& registry = scene->GetRegistry();
 		if (selected.HasCompoenent<TransformComponent>())

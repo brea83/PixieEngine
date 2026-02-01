@@ -21,7 +21,7 @@ namespace Pixie
 		EditorLayer();
 		~EditorLayer();
 
-		void OnSceneChange(Scene* newScene, const std::string& filepath = "");
+		void OnSceneChange(std::shared_ptr<Scene> newScene, const std::string& filepath = "", bool bIsPlayModeSwap = true);
 		
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
@@ -44,11 +44,16 @@ namespace Pixie
 		virtual void OnImGuiRender() override;
 
 	private:
-		Scene* m_CurrentScene{ nullptr };
+		std::shared_ptr<Scene> m_EditorScene{ nullptr };
+		std::shared_ptr<Scene> m_CurrentScene{ nullptr };
 		std::string m_CurrentScenePath{ "" };
+
+
 		SceneState m_SceneState{SceneState::Edit};
 		std::string m_PlayPauseText{ "Play" };
 		
+
+
 		Renderer* m_CurrentRenderer{ nullptr };
 		bool m_ForceUnlit{ false };
 		std::string m_LitButtonString{ "Lit" };

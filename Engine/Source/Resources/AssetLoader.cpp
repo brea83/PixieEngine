@@ -205,7 +205,7 @@ namespace Pixie
 
 	}
 
-	GameObject AssetLoader::LoadPrefab(const std::filesystem::path filePath, Scene* scene)
+	GameObject AssetLoader::LoadPrefab(const std::filesystem::path filePath, std::shared_ptr<Scene> scene)
 	{
 		if (filePath.extension() != "pmeta")
 		{
@@ -681,7 +681,7 @@ namespace Pixie
 		NameComponent& name = rootObject.GetOrAddComponent<NameComponent>();
 		name.Name = filePath.stem().string();
 
-		Scene* gameScene = rootObject.GetScene();
+		std::shared_ptr<Scene> gameScene = rootObject.GetScene();
 		aiNode* rootNode = assimpScene->mRootNode;
 
 		factor = 0.0;
@@ -1020,7 +1020,7 @@ namespace Pixie
 		localTransform.SetRotationEuler(AssimpGlmHelpers::GetGlmVec(rotation), AngleType::Radians);
 	}
 
-	void AssetLoader::ProcessNode(GameObject& nodeObject, aiNode* node, const aiScene* assimpScene, Scene* gameScene, const std::string rootName)
+	void AssetLoader::ProcessNode(GameObject& nodeObject, aiNode* node, const aiScene* assimpScene, std::shared_ptr<Scene> gameScene, const std::string rootName)
 	{
 		
 		

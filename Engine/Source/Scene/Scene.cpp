@@ -9,16 +9,18 @@
 
 namespace Pixie
 {
-	Scene::Scene() 
+	std::shared_ptr<Scene> Scene::Create()
 	{
-		m_CameraManager = CameraManager{ this, false };
+		return std::make_shared<Scene>(Private());
 	}
 
 	void Scene::Initialize()
 	{
+		m_CameraManager = CameraManager{ shared_from_this(), false };
+		m_CameraManager.Init();
+		
 		if (EngineContext::GetEngine()->IsEditorEnabled())
 		{
-			m_CameraManager.InitEditor();
 			m_SceneState = SceneState::Edit;
 		}
 		else
@@ -26,12 +28,7 @@ namespace Pixie
 			m_SceneState = SceneState::Play;
 		}
 
-		auto cameras = m_Registry.view<CameraComponent>();
-		if (cameras)
-		{
-			GameObject firstCamera(cameras.front(), this);
-			SetActiveCamera(firstCamera);
-		}
+		
 	}
 
 	void Scene::PopulateWithTestObjects()
@@ -134,22 +131,25 @@ namespace Pixie
 		}
 	}
 
-	Scene* Scene::Copy(Scene* sourceScene)
+	std::shared_ptr<Scene> Scene::Copy(std::shared_ptr<Scene> sourceScene)
 	{
-		Scene* newScene = new Scene();
+		std::shared_ptr<Scene> newScene = Scene::Create();
 
 		newScene->m_Name = sourceScene->m_Name + " Copy";
 		
-		entt::registry& sourceRegistry = sourceScene->m_Registry;
-		entt::registry& destinationRegistry = newScene->m_Registry;
+		entt::registry& sourceRegistry = sourceScene->GetRegistry();
+		entt::registry& destinationRegistry = newScene->GetRegistry();
 
 
 		std::unordered_map<GUID, entt::entity> guidToDestinationEntt;
-		auto idView = sourceRegistry.view<IDComponent>();
-		for (auto entity : idView)
+		//auto idView = sourceRegistry.view<IDComponent>();
+		for (auto&& [entity, id, nameComp] : sourceRegistry.view<IDComponent, NameComponent>().each())
 		{
+			//GUID guid = sourceRegistry.get<IDComponent>(entity).ID;
 			GUID guid = sourceRegistry.get<IDComponent>(entity).ID;
-			std::string name = sourceRegistry.get<NameComponent>(entity).Name;
+			/*NameComponent* nameComp = sourceRegistry.try_get<NameComponent>(entity);
+			if (!nameComp) continue;*/
+			std::string name = nameComp.Name;
 
 			Entity newEntity = newScene->CreateEntityWithGUID(guid, name);
 			guidToDestinationEntt[guid] = newEntity;
@@ -162,9 +162,14 @@ namespace Pixie
 		CopyRegistryComponents<LightComponent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
 		CopyRegistryComponents<CameraComponent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
 		CopyRegistryComponents<CameraController>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
+		CopyRegistryComponents<CircleRendererComponent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
+		CopyRegistryComponents<CollisionComponent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
+		CopyRegistryComponents<SphereCollider>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
+		CopyRegistryComponents<CubeCollider>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
 
 		return newScene;
 	}
+
 
 	Scene::~Scene()
 	{
@@ -175,22 +180,35 @@ namespace Pixie
 	
 	void  Scene::BeginPlayMode()
 	{
+		if (m_SceneState == SceneState::UnInitialized)
+			Initialize();
+		m_SceneState = SceneState::Play;
 		m_CameraManager.OnBeginPlayMode();
 	}
 
 	void  Scene::EndPlayMode()
 	{
+		m_SceneState = SceneState::Pause;
 		m_CameraManager.OnEndPlayMode();
+	}
+
+	void Scene::EditMode()
+	{
+		m_SceneState = SceneState::Edit;
+		m_CameraManager.OnBeginEditMode();
 	}
 
 	void Scene::OnUpdate(float deltaTime)
 	{
+		if (m_SceneState != SceneState::Play) return;
+
 		m_CameraManager.OnPlayUpdate(deltaTime);
 
 	}
 
 	void Scene::OnEditorUpdate(float deltaTime)
 	{
+		if (m_SceneState != SceneState::Edit) return;
 		m_CameraManager.OnEditorUpdate(deltaTime);
 
 	}
@@ -202,7 +220,7 @@ namespace Pixie
 
 	GameObject Scene::CreateEmptyGameObject(const std::string& name)
 	{
-		GameObject gameObject = { m_Registry.create(), this };
+		GameObject gameObject = { m_Registry.create(), shared_from_this()};
 		gameObject.AddComponent<IDComponent>();
 		gameObject.AddComponent<TransformComponent>();
 		gameObject.AddComponent<HeirarchyComponent>();
@@ -213,7 +231,7 @@ namespace Pixie
 	
 	GameObject Scene::CreateGameObjectWithGUID(GUID guid, const std::string& name)
 	{
-		GameObject gameObject = { m_Registry.create(), this };
+		GameObject gameObject = { m_Registry.create(), shared_from_this()};
 		gameObject.AddComponent<IDComponent>(guid);
 		gameObject.AddComponent<TransformComponent>();
 		gameObject.AddComponent<HeirarchyComponent>();
@@ -263,7 +281,7 @@ namespace Pixie
 	{
 		if (m_Registry.valid(entityHandle))
 		{
-			return GameObject(entityHandle, this);
+			return GameObject(entityHandle, shared_from_this());
 		}
 		return GameObject();
 	}
@@ -276,7 +294,7 @@ namespace Pixie
 			const NameComponent& component = view.get<NameComponent>(entity);
 			if (component.Name == name)
 			{
-				return GameObject(entity, this);
+				return GameObject(entity, shared_from_this());
 			}
 		}
 
@@ -291,7 +309,7 @@ namespace Pixie
 			const IDComponent& component = view.get<IDComponent>(entity);
 			if (component.ID == guid)
 			{
-				return GameObject(entity, this);
+				return GameObject(entity, shared_from_this());
 			}
 		}
 
@@ -426,12 +444,12 @@ namespace Pixie
 		
 		if(directionalLights.size() > 1) Logger::Core(LOG_WARNING, "Warning: more than one directional light in scene, but Scene::GetMainLight() only returns the first one found");
 
-		return GameObject(directionalLights.front(), this);
+		return GameObject(directionalLights.front(), shared_from_this());
 	}
 
 	Entity Scene::CreateEntity(const std::string& name)
 	{
-		Entity entity = { m_Registry.create(), this };
+		Entity entity = { m_Registry.create(), shared_from_this()};
 		//entity.AddComponent<TransformComponent>();
 		NameComponent& nameComponent = entity.AddComponent<NameComponent>();
 		nameComponent.Name = name.empty() ? "Empty Entity" : name;
@@ -440,7 +458,7 @@ namespace Pixie
 
 	Entity Scene::CreateEntityWithGUID(GUID guid, const std::string& name)
 	{
-		Entity entity = { m_Registry.create(), this };
+		Entity entity = { m_Registry.create(), shared_from_this()};
 		entity.AddComponent<IDComponent>(guid);
 		NameComponent& nameComponent = entity.AddComponent<NameComponent>();
 		nameComponent.Name = name.empty() ? "Empty Entity" : name;

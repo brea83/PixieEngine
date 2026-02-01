@@ -12,7 +12,7 @@
 namespace Pixie
 {
 	static int s_NumGameObjects = 1;
-	GameObject::GameObject(entt::entity entity, Scene* scene)
+	GameObject::GameObject(entt::entity entity, std::shared_ptr<Scene> scene)
 		: Entity(entity, scene)
 	{}
 

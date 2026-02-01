@@ -32,8 +32,8 @@ namespace Pixie
 
 		glm::vec2 GetWindowSize() const;
 
-		void SetScene(Scene* newScene);
-		Scene* GetScene() { return m_ActiveScene; }
+		void SetScene(std::shared_ptr<Scene> newScene, bool bAndInitialize = false);
+		std::shared_ptr<Scene> GetScene() { return m_ActiveScene; }
 
 		Renderer* GetRenderer() { return m_Renderer; }
 
@@ -79,7 +79,7 @@ namespace Pixie
 		float m_LastFrameTime{ 0.0f };
 
 		std::shared_ptr<Window> m_MainWindow{ nullptr };
-		Scene* m_ActiveScene{ nullptr };
+		std::shared_ptr<Scene> m_ActiveScene{ nullptr };
 		Renderer* m_Renderer{ nullptr };
 
 		PhysicsEngine* m_Physics{ nullptr };

@@ -204,7 +204,7 @@ namespace Pixie
 				m_Selected = nullptr;
 		}
 	}
-	void SceneHierarchyPanel::OnSceneChange(Scene* newScene)
+	void SceneHierarchyPanel::OnSceneChange(std::shared_ptr<Scene> newScene)
 	{
 		if (m_Selected != nullptr)
 		{

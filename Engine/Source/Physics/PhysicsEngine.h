@@ -42,7 +42,7 @@ namespace Pixie
 	{
 	public:
 		PhysicsEngine();
-		void OnUpdate(Scene* scene, float deltaTime);
+		void OnUpdate(std::shared_ptr<Scene> scene, float deltaTime);
 		//void UpdateEditor(Scene* scene, float deltatime)
 
 		// when I have batching set up this will be where I batch the colliders and send them to the renderer

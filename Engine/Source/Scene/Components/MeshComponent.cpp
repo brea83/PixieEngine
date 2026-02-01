@@ -63,7 +63,7 @@ namespace Pixie
 		StdPath fileExtension = path.extension();
 			GameObject rootObject;
 			EngineContext* engine = EngineContext::GetEngine();
-			Scene* scene = engine->GetScene();
+			std::shared_ptr<Scene> scene = engine->GetScene();
 			entt::registry& registry = scene->GetRegistry();
 
 

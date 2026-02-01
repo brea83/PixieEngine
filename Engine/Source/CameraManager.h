@@ -18,16 +18,17 @@ namespace Pixie
 	class CameraManager
 	{
 	public:
-		CameraManager(Scene* scene = nullptr, bool isFlyModeOn = false) : m_Scene(scene), m_EditorFlyMode(isFlyModeOn) {}
+		CameraManager(std::shared_ptr<Scene> scene = nullptr, bool isFlyModeOn = false) : m_Scene(scene), m_EditorFlyMode(isFlyModeOn) {}
 
 		void InitEditor();
-
+		void Init();
 		void OnEditorUpdate(float deltaTime);
-		void OnPlayUpdate(float deltaTime) {}
+		void OnPlayUpdate(float deltaTime);
 		bool OnEvent(Event& event);
 		void OnBeginPlayMode();
 		//void OnPlayModeUpdate();
 		void OnEndPlayMode();
+		void OnBeginEditMode();
 
 		// start new cameras with an apect ratio that matches the curent rendering viewport
 		void OnCameraAdded(entt::entity entity, CameraComponent& cameraComponent);
@@ -51,7 +52,7 @@ namespace Pixie
 		// I think that will mean I'll need update methods for lerping?
 
 	private:
-		Scene* m_Scene{ nullptr };
+		std::shared_ptr<Scene> m_Scene{ nullptr };
 		bool m_EditorFlyMode{ false };
 
 		entt::entity m_ActiveCamera{ entt::null };

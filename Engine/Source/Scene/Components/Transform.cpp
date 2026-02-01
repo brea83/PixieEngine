@@ -228,7 +228,7 @@ namespace Pixie
 
         if (m_ParentGuid != 0)
         {
-            Scene* scene = EngineContext::GetEngine()->GetScene();
+            std::shared_ptr<Scene> scene = EngineContext::GetEngine()->GetScene();
             GameObject parentObject = scene->FindGameObjectByGUID(m_ParentGuid);
             if (parentObject)
             {

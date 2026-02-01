@@ -16,13 +16,13 @@ namespace Pixie
 	{
 	public:
 		Entity() = default;
-		Entity(entt::entity handle, Scene* scene);
+		Entity(entt::entity handle, std::shared_ptr<Scene> scene);
 		Entity(const Entity& other) = default;
 
 		const std::string& GetName() const;
 		entt::entity GetEnttHandle() const { return m_EntityHandle; }
-		const Scene* GetSceneConst() const { return m_Scene; }
-		Scene* GetScene() const { return m_Scene; }
+		const std::shared_ptr<Scene> GetSceneConst() const { return m_Scene; }
+		std::shared_ptr<Scene> GetScene() const { return m_Scene; }
 		// Component function templates defined lower in the file to make 
 		// reading what functions are available less cluttered
 		template <typename Type>
@@ -65,7 +65,7 @@ namespace Pixie
 		}
 
 	protected:
-		Scene* m_Scene{ nullptr };
+		std::shared_ptr<Scene> m_Scene{ nullptr };
 		entt::entity m_EntityHandle{ entt::null };
 
 		static void WarnSceneNull(entt::entity entityHandle, const std::string& attemptedAction);

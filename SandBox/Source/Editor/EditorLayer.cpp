@@ -33,11 +33,15 @@ namespace Pixie
 		//delete m_AssetViewer;
 	}
 
-	void EditorLayer::OnSceneChange(Scene* newScene, const std::string& filepath)
+	void EditorLayer::OnSceneChange(std::shared_ptr<Scene> newScene, const std::string& filepath, bool bIsPlayModeSwap)
 	{
+		if (!bIsPlayModeSwap)
+		{
+			m_EditorScene = newScene;
+			m_CurrentScenePath = filepath;
+		}
 		m_CurrentScene = newScene;
 		m_Selected = nullptr;
-		m_CurrentScenePath = filepath;
 		m_CurrentScene->ForwardAspectRatio(m_ViewportPanelSize.x, m_ViewportPanelSize.y);
 		m_Hierarchy->OnSceneChange(m_CurrentScene);
 	}
@@ -71,7 +75,8 @@ namespace Pixie
 		ImGui_ImplGlfw_InitForOpenGL(engine->GetGlfwWindow(), true);
 		ImGui_ImplOpenGL3_Init();
 
-		m_CurrentScene = engine->GetScene();
+		m_EditorScene = engine->GetScene();
+		m_CurrentScene = m_EditorScene;
 		m_CurrentRenderer = engine->GetRenderer();
 		//m_Hierarchy.SetContext(EngineContext::GetEngine()->GetScene());
 
@@ -104,23 +109,42 @@ namespace Pixie
 
 	void EditorLayer::OnScenePlay()
 	{
+		std::shared_ptr<Scene> runtimeCopy = Scene::Copy(m_EditorScene);
+		
+
+		if (runtimeCopy == nullptr) return;
+
+		EngineContext::GetEngine()->SetScene(runtimeCopy);
+		
+		m_CurrentScene = runtimeCopy;
+		m_CurrentScene->Initialize();
+
+		m_CurrentScene->BeginPlayMode();
 		m_SceneState = SceneState::Play;
 		m_PlayPauseText = "Pause";
-		if (m_CurrentScene != nullptr)
-			m_CurrentScene->BeginPlayMode();
+
+		OnSceneChange(m_CurrentScene);
 	}
 
 	void EditorLayer::OnScenePause()
 	{
 		m_SceneState = SceneState::Pause;
+		m_CurrentScene->Pause();
 		m_PlayPauseText = "Play";
 	}
 
 	void EditorLayer::OnSceneStop()
 	{
 		m_SceneState = SceneState::Edit;
+		m_PlayPauseText = "Play";
 		if (m_CurrentScene != nullptr)
+		{
 			m_CurrentScene->EndPlayMode();
+
+			m_CurrentScene = m_EditorScene;
+			EngineContext::GetEngine()->SetScene(m_CurrentScene);
+			OnSceneChange(m_CurrentScene);
+		}
 	}
 
 	void EditorLayer::OnUpdate(float deltaTime)
@@ -135,9 +159,9 @@ namespace Pixie
 	{
 		if (m_SceneState != SceneState::Edit)
 			OnSceneStop();
-		Scene* loadedScene = new Scene();
-		EngineContext::GetEngine()->SetScene(loadedScene);
-		OnSceneChange(loadedScene);
+		std::shared_ptr<Scene> newScene = Scene::Create();
+		EngineContext::GetEngine()->SetScene(newScene, true);
+		OnSceneChange(newScene, "", false);
 	}
 
 	void EditorLayer::SaveScene()
@@ -173,11 +197,11 @@ namespace Pixie
 
 		if (!filePath.empty())
 		{
-			Scene* loadedScene = new Scene();
+			std::shared_ptr<Scene> loadedScene = Scene::Create();
 			EngineContext::GetEngine()->SetScene(loadedScene);
 			SceneSerializer serializer(loadedScene);
 			serializer.Deserialize(filePath);
-			OnSceneChange(loadedScene, filePath);
+			OnSceneChange(loadedScene, filePath, false);
 		}
 	}
 

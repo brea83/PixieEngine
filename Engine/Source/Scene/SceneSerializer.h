@@ -7,14 +7,15 @@ namespace Pixie
 	class SceneSerializer
 	{
 	public:
-		SceneSerializer(Scene* scene);
+		SceneSerializer(std::shared_ptr<Scene> scene);
 
 		//ToDo: implement human readable serialization for collaborative works
 		void Serialize(std::filesystem::path filePath);
 
+		//includes call to scene.Initialize at the end
 		bool Deserialize(std::filesystem::path filePath);
 
 	private:
-		Scene* m_Scene;
+		std::shared_ptr<Scene> m_Scene;
 	};
 }

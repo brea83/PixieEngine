@@ -54,7 +54,7 @@ namespace Pixie
 
 		if(m_ImGuiLayer == nullptr && m_EditorEnabled)	m_ImGuiLayer = new ImGuiLayer();
 
-		if (m_ActiveScene == nullptr) m_ActiveScene = new Scene();
+		if (m_ActiveScene == nullptr) m_ActiveScene = Scene::Create();
 		m_ActiveScene->Initialize();
 
 		glm::vec2 viewportSize = glm::vec2((float)m_MainWindow->WindowWidth(), (float)m_MainWindow->WindowHeight());
@@ -86,7 +86,7 @@ namespace Pixie
 
 	EngineContext::~EngineContext()
 	{
-		delete m_ActiveScene;
+		//delete m_ActiveScene;
 		delete m_Renderer;
 		delete m_ImGuiLayer;
 	}
@@ -104,14 +104,17 @@ namespace Pixie
 		return { glm::vec2(m_MainWindow->WindowWidth(), m_MainWindow->WindowHeight()) };
 	}
 
-	void EngineContext::SetScene(Scene* newScene)
+	void EngineContext::SetScene(std::shared_ptr<Scene> newScene, bool bAndInitialize)
 	{
-		if (m_ActiveScene)
+		/*if (m_ActiveScene)
 		{
 			delete m_ActiveScene;
-		}
+		}*/
 		m_ActiveScene = newScene;
-		m_ActiveScene->Initialize();
+		if (bAndInitialize)
+		{
+			m_ActiveScene->Initialize();
+		}
 	}
 
 	void EngineContext::Update()
@@ -125,7 +128,8 @@ namespace Pixie
 
 			if (!m_EditorEnabled)
 			{
-				m_ActiveScene->OnUpdate(m_DeltaTime);
+				//ToDo sort out runtime layer that replaces editor layer
+				//m_ActiveScene->OnUpdate(m_DeltaTime);
 			}
 
 			// right now physics is only testing collisions, and I want to test it in editor mode so there is not yet a separate runtime or editor update. 

@@ -25,10 +25,13 @@ namespace Pixie
 		SimulatePhysics = 3
 	};
 
-	class Scene
+	class Scene : public std::enable_shared_from_this<Scene>
 	{
+		struct Private { explicit Private() = default; };
 	public:
-		Scene();
+		Scene(Private){}
+		static std::shared_ptr<Scene> Create();
+		std::shared_ptr<Scene> GetPtr() { return shared_from_this(); }
 		~Scene();
 
 		std::string GetName() const { return m_Name; }
@@ -51,10 +54,14 @@ namespace Pixie
 		void PopulateWithTestObjects();
 		void CollisionStressTest(int colliderCount = 20);
 
-		Scene* Copy(Scene* sourceScene);
+		static std::shared_ptr<Scene> Copy(std::shared_ptr<Scene> sourceScene);
 
 		void BeginPlayMode();
 		void EndPlayMode();
+		void EditMode();
+
+		void Pause() { m_SceneState = SceneState::Pause; }
+
 		void OnUpdate(float deltaTime);
 		void OnEditorUpdate(float deltaTime);
 

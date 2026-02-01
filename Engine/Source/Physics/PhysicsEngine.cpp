@@ -19,7 +19,7 @@ namespace Pixie
 	PhysicsEngine::PhysicsEngine()
 	{}
 	
-	void PhysicsEngine::OnUpdate(Scene* scene, float deltaTime)
+	void PhysicsEngine::OnUpdate(std::shared_ptr<Scene> scene, float deltaTime)
 	{
 		std::vector<CollisionEvent> lastFrameCollisions;
 		lastFrameCollisions.reserve(m_NewCollisions.size() + m_OngoingCollisions.size());

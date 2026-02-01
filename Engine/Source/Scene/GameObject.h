@@ -14,7 +14,7 @@ namespace Pixie
 	{
 	public:
 		GameObject() : Entity(){}
-		GameObject(entt::entity entity, Scene* scene);
+		GameObject(entt::entity entity, std::shared_ptr<Scene> scene);
 		virtual ~GameObject();
 		
 		TransformComponent& GetTransform();
@@ -22,7 +22,7 @@ namespace Pixie
 		GUID GetGUID() const { return GetComponent<IDComponent>().ID; }
 		
 
-		Scene* GetScene() { return m_Scene; }
+		//std::shared_ptr<Scene> GetScene() { return m_Scene; }
 		
 
 		void SetParentNone();

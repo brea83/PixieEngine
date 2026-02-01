@@ -14,7 +14,7 @@ namespace Pixie
 {
 	EditorCamera::EditorCamera() : Entity() {}
 
-	EditorCamera::EditorCamera(entt::entity entity, Scene* scene, float fov, float aspectRatio, float nearClip, float farClip)
+	EditorCamera::EditorCamera(entt::entity entity, std::shared_ptr<Scene> scene, float fov, float aspectRatio, float nearClip, float farClip)
 		: Entity(entity, scene)
 	{
 		TransformComponent& transform = AddComponent<TransformComponent>();

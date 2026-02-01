@@ -12,10 +12,54 @@ namespace Pixie
 {
     void CameraManager::InitEditor()
     {
-        Entity entity = m_Scene->CreateEntity("Editor Camera");
+        if (m_EditorCamera == entt::null || m_EditorCamera == entt::tombstone)
+        {
+            Entity entity = m_Scene->CreateEntity("Editor Camera");
 
-        m_EditorCamera = EditorCamera(entity, m_Scene);
+            m_EditorCamera = EditorCamera(entity, m_Scene);
+        }
+
         m_ActiveCamera = m_EditorCamera;
+    }
+
+    void CameraManager::Init()
+    {
+        if (m_Scene == nullptr)
+        {
+            Logger::Core(LOG_ERROR, "CameraManager Init called with an nullptr scene. this should not be possible");
+            return;
+        }
+
+        entt::registry& registry = m_Scene->GetRegistry();
+        auto cameras = registry.view<CameraComponent>();
+        GameObject potentialDefault = GameObject();
+        for (auto&& [entity, camera, heirarchy] : registry.view<CameraComponent, HeirarchyComponent>().each())
+        {
+            if (camera.IsDefault)
+            {
+                GameObject defaultCam = GameObject(entity, m_Scene);
+                SetDefaultCamera(defaultCam);
+            }
+            else
+            {
+                potentialDefault = GameObject(entity, m_Scene);
+            }
+        }
+        
+        if (m_DefaultCamera == entt::null && potentialDefault.GetEnttHandle() != entt::null)
+        {
+            SetDefaultCamera(potentialDefault);
+        }
+
+        // now that default is set up set up starting active cam
+        if (EngineContext::GetEngine()->IsEditorEnabled())
+        {
+            InitEditor();
+        }
+        else
+        {
+            m_ActiveCamera = m_DefaultCamera;
+        }
     }
 
     void CameraManager::OnEditorUpdate(float deltaTime)
@@ -25,6 +69,15 @@ namespace Pixie
         if (!controller) return;
         controller->OnUpdate(deltaTime, activeCam);
     }
+
+    void CameraManager::OnPlayUpdate(float deltaTime)
+    {
+        GameObject activeCam = GameObject(m_ActiveCamera, m_Scene);
+        CameraController* controller = activeCam.TryGetComponent<CameraController>();
+        if (!controller) return;
+        controller->OnUpdate(deltaTime, activeCam);
+    }
+
     bool CameraManager::OnEvent(Event& event)
     {
         EventDispatcher dispatcher{ event };
@@ -42,29 +95,14 @@ namespace Pixie
 
     bool CameraManager::OnKeyPressed(KeyPressedEvent& event)
     {
-        /*CameraController* controllerComponent = m_Scene->GetRegistry().try_get<CameraController>(m_ActiveCamera);
-        if (!controllerComponent) return false;
-
-        Inputs::Keyboard keyCode = (Inputs::Keyboard)event.GetKeyCode();
-        if (keyCode == Inputs::Keyboard::Tab)
-        {
-            if (controllerComponent->GetMoveType() != CameraMoveType::Fly)
-            {
-                controllerComponent->SetMoveType(CameraMoveType::Fly);
-            }
-            else
-            {
-                controllerComponent->SetMoveType(CameraMoveType::WaitingForMouse);
-            }
-            return true;
-        }*/
-
         return false;
     }
+
     void CameraManager::OnBeginPlayMode()
     {
         if (EngineContext::GetEngine()->IsEditorEnabled() && m_ActiveCamera == m_EditorCamera)
         {
+            if (m_DefaultCamera == entt::null) return;
             //set active camera to main scene camera
             m_ActiveCamera = m_DefaultCamera;
             GameObject activeCam = GameObject(m_ActiveCamera, m_Scene);
@@ -82,6 +120,23 @@ namespace Pixie
     //{}
 
     void CameraManager::OnEndPlayMode()
+    {
+        if (EngineContext::GetEngine()->IsEditorEnabled())
+        {
+            m_ActiveCamera = m_EditorCamera;
+
+            GameObject activeCam = GameObject(m_ActiveCamera, m_Scene);
+            if (!activeCam) return;
+
+            CameraComponent& cameraComponent = activeCam.GetComponent<CameraComponent>();
+
+            glm::vec2 viewport = EngineContext::GetEngine()->GetViewportSize();
+
+            cameraComponent.Cam.SetAspectRatio(viewport.x / viewport.y);
+        }
+    }
+
+    void CameraManager::OnBeginEditMode()
     {
         if (EngineContext::GetEngine()->IsEditorEnabled())
         {
