@@ -85,42 +85,41 @@ namespace Pixie
 
 		GameObject GetMainLight();
 
+		// ToStudy: why do I need to declare all the sub templates, why isn't the first one enough?
 		template<typename T>
-		void OnComponentAdded(Entity& entity, T& component);
+		void OnComponentAdded(Entity& entity, T& component) { }
 		template<>
-		void OnComponentAdded<IDComponent>(Entity& entity, IDComponent& component);
+		void OnComponentAdded<IDComponent>(Entity& entity, IDComponent& component) { }
 		template<>
-		void OnComponentAdded<TagComponent>(Entity& entity, TagComponent& component);
+		void OnComponentAdded<TagComponent>(Entity& entity, TagComponent& component) { }
 		template<>
-		void OnComponentAdded<NameComponent>(Entity& entity, NameComponent& component);
+		void OnComponentAdded<NameComponent>(Entity& entity, NameComponent& component) { }
 		template<>
-		void OnComponentAdded<HeirarchyComponent>(Entity& entity, HeirarchyComponent& component);
+		void OnComponentAdded<HeirarchyComponent>(Entity& entity, HeirarchyComponent& component) { }
 		template<>
-		void OnComponentAdded<TransformComponent>(Entity& entity, TransformComponent& component);
+		void OnComponentAdded<TransformComponent>(Entity& entity, TransformComponent& component) { }
 		template<>
-		void OnComponentAdded<MeshComponent>(Entity& entity, MeshComponent& component);
+		void OnComponentAdded<MeshComponent>(Entity& entity, MeshComponent& component) { }
 		template<>
-		void OnComponentAdded<CircleRendererComponent>(Entity& entity, CircleRendererComponent& component);
+		void OnComponentAdded<CircleRendererComponent>(Entity& entity, CircleRendererComponent& component) { }
 		template<>
-		void OnComponentAdded<LightComponent>(Entity& entity, LightComponent& component);
+		void OnComponentAdded<LightComponent>(Entity& entity, LightComponent& component) { }
+		template<>
+		void OnComponentAdded<CollisionComponent>(Entity& entity, CollisionComponent& component) { }
+		template<>
+		void OnComponentAdded<SphereCollider>(Entity& entity, SphereCollider& component) { }
+		template<>
+		void OnComponentAdded<CubeCollider>(Entity& entity, CubeCollider& component) { }
+		template<>
+		void OnComponentAdded<PlaneCollider>(Entity& entity, PlaneCollider& component) { }
+		template<>
+		void OnComponentAdded<MeshCollider>(Entity& entity, MeshCollider& component) { }
+		
 		template<>
 		void OnComponentAdded<CameraComponent>(Entity& entity, CameraComponent& component);
 		template<>
 		void OnComponentAdded<CameraController>(Entity& entity, CameraController& component);
-		template<>
-		void OnComponentAdded<CollisionComponent>(Entity& entity, CollisionComponent& component);
-		template<>
-		void OnComponentAdded<SphereCollider>(Entity& entity, SphereCollider& component)
-		{ }
-		template<>
-		void OnComponentAdded<CubeCollider>(Entity& entity, CubeCollider& component)
-		{ }
-		template<>
-		void OnComponentAdded<PlaneCollider>(Entity& entity, PlaneCollider& component)
-		{ }
-		template<>
-		void OnComponentAdded<MeshCollider>(Entity& entity, MeshCollider& component)
-		{ }
+		
 	private:
 		std::string m_Name{ "New Scene" };
 		entt::registry m_Registry;

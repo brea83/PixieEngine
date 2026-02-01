@@ -503,51 +503,9 @@ namespace Pixie
 		return newLight;
 	}
 
-
-	template<typename T>
-	 void Scene::OnComponentAdded(Entity& entity, T& component)
-	{
-
-	}
-
-	 template<>
-	 void Scene::OnComponentAdded<IDComponent>(Entity& entity, IDComponent& component)
-	 {}
-
-	template<>
-	 void Scene::OnComponentAdded<TagComponent>(Entity& entity, TagComponent& component)
-	{}
-
-	template<>
-	 void Scene::OnComponentAdded<NameComponent>(Entity& entity, NameComponent & component)
-	{}
-
-	template<>
-	 void Scene::OnComponentAdded<HeirarchyComponent>(Entity& entity, HeirarchyComponent & component)
-	{}
-
-	template<>
-	 void Scene::OnComponentAdded<TransformComponent>(Entity& entity, TransformComponent & component)
-	{}
-
-	template<>
-	 void Scene::OnComponentAdded<MeshComponent>(Entity& entity, MeshComponent & component)
-	{}
-
-	template<>
-	 void Scene::OnComponentAdded<LightComponent>(Entity& entity, LightComponent & component)
-	{}
-
-	 template<>
-	 void Scene::OnComponentAdded<CircleRendererComponent>(Entity& entity, CircleRendererComponent& component)
-	 {}
-
 	template<>
 	 void Scene::OnComponentAdded<CameraComponent>(Entity& entity, CameraComponent& component)
 	{
-		/*glm::vec2 viewport = EngineContext::GetEngine()->GetViewportSize();
-		component.Cam.SetAspectRatio(viewport.x / viewport.y);*/
-
 		m_CameraManager.OnCameraAdded(entity.GetEnttHandle(), component);
 	}
 
@@ -557,10 +515,4 @@ namespace Pixie
 		 component.UpdateFocalPoint(entity);
 	}
 
-	 template<>
-	 void Scene::OnComponentAdded<CollisionComponent>(Entity& entity, CollisionComponent& component)
-	 {
-		 Logger::Core(LOG_TRACE, "Scene called OnComponentAdded<CollisionComponent>");
-	 }
-	
 }
