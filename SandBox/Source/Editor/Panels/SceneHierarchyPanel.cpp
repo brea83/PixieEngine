@@ -81,7 +81,7 @@ namespace Pixie
 
 					if (ImGui::MenuItem("Plane XZ"))
 					{
-						m_CurrentScene->CreatePlane(glm::vec3(-90.0f, 0.0f, 0.0f));
+						m_CurrentScene->CreatePlane(glm::vec3(90.0f, 0.0f, 0.0f));
 					}
 
 					if (ImGui::MenuItem("Plane XY"))

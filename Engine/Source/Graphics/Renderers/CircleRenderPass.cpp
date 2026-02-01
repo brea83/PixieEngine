@@ -37,6 +37,8 @@ namespace Pixie
             m_Shader->EndUse();
             return;
         }
+        auto view = registry.view<SphereCollider>();
+        if (view.empty()) return;
 
         CircleRendererComponent colliderCircle = CircleRendererComponent();
         colliderCircle.Color = glm::vec4(0.1f, 0.9f, 0.1f, 1.0f);

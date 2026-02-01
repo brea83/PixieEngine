@@ -35,9 +35,7 @@ namespace Pixie
 		m_FrameBuffer = FrameBuffer::Create(frameBufferData);
 		glEnable(GL_DEPTH_TEST);
 
-		m_LightCamera = std::make_shared<Camera>(45.0f, 1.0f);
-		m_LightCamera->SetOrthographic(true);
-		m_LightCamera->SetZoom(20.0f);
+		m_ShadowCamera = std::make_shared<Camera>(45.0f, 1.0f);
 
 		m_LightTransfrom = std::make_shared<TransformComponent>();
 
@@ -115,8 +113,14 @@ namespace Pixie
 		{
 			//TEMP 
 			// TODO: move camera frustrum fitting somewhere that makes more sense
-
-			std::vector< glm::vec4> frustumWS = GetFrustumCornersWS(projectionMatrix, viewMatrix);
+			//fake projection matrix with different near/far for better shadows
+			m_ShadowCamera->SetAspectRatio(mainCam.GetAspectRatio());
+			m_ShadowCamera->SetFov(mainCam.GetFov());
+			m_ShadowCamera->SetZoom(mainCam.GetZoom());
+			m_ShadowCamera->SetOrthographic(mainCam.IsOrthographic());
+			m_ShadowCamera->SetNearFar(0.01f, 35.0f);
+			glm::mat4 shadowProjection = m_ShadowCamera->ProjectionMatrix();
+			std::vector< glm::vec4> frustumWS = GetFrustumCornersWS(shadowProjection, viewMatrix);
 			glm::vec3 frustumCenter = GetFrustumCenter(frustumWS);
 
 

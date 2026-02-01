@@ -21,7 +21,7 @@ namespace Pixie
 
 		virtual std::unordered_map<std::string, std::shared_ptr<FrameBuffer>> GetAllRenderBuffers() override;
 	protected:
-		std::shared_ptr<Camera> m_LightCamera{ nullptr };
+		std::shared_ptr<Camera> m_ShadowCamera{ nullptr };
 		std::shared_ptr<TransformComponent> m_LightTransfrom{ nullptr };
 		glm::mat4 m_LightProjection{glm::mat4(1)};
 		glm::mat4 m_LightView{glm::mat4(1)};

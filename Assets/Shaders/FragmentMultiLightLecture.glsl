@@ -283,7 +283,7 @@ void main()
 			
 		}	
 		FragColor.rgb = (ambientLight.xyz + (1.0 - shadowMask) * (accumulatedDiffuse + accumulatedSpecular)) * textureColor;
-		
+		//FragColor.rgb = (ambientLight.xyz + (accumulatedDiffuse + accumulatedSpecular)) * textureColor;
 
 	}
 	else
