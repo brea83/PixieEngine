@@ -174,9 +174,9 @@ namespace Pixie
 		if (!filePath.empty())
 		{
 			Scene* loadedScene = new Scene();
+			EngineContext::GetEngine()->SetScene(loadedScene);
 			SceneSerializer serializer(loadedScene);
 			serializer.Deserialize(filePath);
-			EngineContext::GetEngine()->SetScene(loadedScene);
 			OnSceneChange(loadedScene, filePath);
 		}
 	}
