@@ -191,6 +191,22 @@ namespace Pixie
         }
     };
 
-    
+    struct NativeScriptComponent
+    {
+        GameObject* Instance{ nullptr };
 
+        GameObject*(*InstantiateScript)();
+        void(*DestroyScript)(NativeScriptComponent*);
+
+        template<typename T>
+        void Bind()
+        {
+            InstantiateScript = []() { return static_cast<GameObject*>(new T()); };
+            DestroyScript = [](NativeScriptComponent* scriptComponent) { delete scriptComponent->Instance; scriptComponent->Instance = nullptr; };
+        }
+    };
+
+    // empty components to use for organizing views and groups only
+    struct EditorOnly
+    { };
 }

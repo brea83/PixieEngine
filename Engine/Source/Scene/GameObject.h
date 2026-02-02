@@ -35,7 +35,9 @@ namespace Pixie
 		void RemoveChild(GameObject& child);
 		std::vector< GameObject> GetChildren();
 
+		virtual void OnCreate(){ }
 		virtual void OnUpdate(float deltaTime);
+		virtual void OnDestroy(){ }
 
 		// Serialized as:
 		// entt ID (to do replace with uid)
@@ -51,5 +53,8 @@ namespace Pixie
 		static bool Deserialize(StreamReader* fileReader, GameObject& object);
 	protected:
 		//entt::entity m_SerializedID{ entt::null };
+
+	private:
+		friend class Scene;
 	};
 }

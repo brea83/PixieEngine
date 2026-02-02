@@ -184,6 +184,18 @@ namespace Pixie
 			Initialize();
 		m_SceneState = SceneState::Play;
 		m_CameraManager.OnBeginPlayMode();
+
+		//instantiate and bind script components
+		for (auto&& [entity, script] : m_Registry.view<NativeScriptComponent>().each())
+		{
+			if (!script.Instance)
+			{
+				script.Instance = script.InstantiateScript();
+				script.Instance->m_EntityHandle = entity;
+				script.Instance->m_Scene = shared_from_this();
+				script.Instance->OnCreate();
+			}
+		}
 	}
 
 	void  Scene::EndPlayMode()
@@ -203,6 +215,14 @@ namespace Pixie
 		if (m_SceneState != SceneState::Play) return;
 
 		m_CameraManager.OnPlayUpdate(deltaTime);
+
+		//instantiate and bind script components
+		for (auto&& [entity, script] : m_Registry.view<NativeScriptComponent>().each())
+		{
+			if (!script.Instance) continue;
+
+			script.Instance->OnUpdate(deltaTime);
+		}
 
 	}
 
