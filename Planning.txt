@@ -26,3 +26,27 @@ system for simulating playmode in editor
 
 audio system
 
+
+
+============================
+
+gameplay
+
+
+editor or runtime layer 
+
+on play
+start game state machine
+
+
+Game class 
+	contains a state machine
+	a list of scenes and logic of how/when to swap
+	OnUpdate()
+	player cross level data struct
+		score etc
+
+
+mover component
+	called on update
+	gets transform from entity... scriptable component is probably the easiest way to set this up?
