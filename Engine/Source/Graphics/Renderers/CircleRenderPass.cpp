@@ -37,17 +37,25 @@ namespace Pixie
             m_Shader->EndUse();
             return;
         }
+
+        //prep for batching 
+     /*   std::vector<glm::mat4> intersectingColliders;
+        std::vector<glm::mat4> unHitColliders;*/
+
         auto view = registry.view<SphereCollider>();
         if (view.empty()) return;
 
         CircleRendererComponent colliderCircle = CircleRendererComponent();
-        colliderCircle.Color = glm::vec4(0.1f, 0.9f, 0.1f, 1.0f);
+        glm::vec4 baseColor = glm::vec4(0.1f, 0.9f, 0.1f, 1.0f);
+        glm::vec4 collidingColor = glm::vec4(1.0f, 0.5f, 0.5f, 1.0f);
+        colliderCircle.Color = baseColor;
         glm::mat4 rotationXY = glm::mat4(1.0f);
         glm::mat4 rotationXZ = glm::rotate(rotationXY, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         glm::mat4 rotationYZ = glm::rotate(rotationXY, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         
         SetCircleUniforms(colliderCircle);
 
+        bool previousColliderWasColliding = false;
         for (auto&& [entity, collider] : registry.view<SphereCollider>().each())
         {
             glm::mat4 identity = glm::mat4(1.0f);
@@ -57,6 +65,29 @@ namespace Pixie
             glm::mat4 circleXY = translation * rotationXY * scale;
             glm::mat4 circleXZ = translation * rotationXZ * scale;
             glm::mat4 circleYZ = translation * rotationYZ * scale;
+
+            if (collider.Colliding && !previousColliderWasColliding)
+            {
+                m_Shader->SetUniformVec4("Color", collidingColor);
+                previousColliderWasColliding = true;
+            }
+            else if (!collider.Colliding && previousColliderWasColliding)
+            {
+                m_Shader->SetUniformVec4("Color", baseColor);
+                previousColliderWasColliding = false;
+            }
+            /*if (collider.Colliding)
+            {
+                intersectingColliders.push_back(circleXY);
+                intersectingColliders.push_back(circleXZ);
+                intersectingColliders.push_back(circleYZ);
+            }
+            else
+            {
+                unHitColliders.push_back(circleXY);
+                unHitColliders.push_back(circleXZ);
+                unHitColliders.push_back(circleYZ);
+            }*/
 
             m_Shader->SetUniformMat4("Transform", circleXY);
             colliderCircle.MeshResource->Render(*m_Shader);

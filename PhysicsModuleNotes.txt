@@ -133,3 +133,15 @@ Distance2 = (xmin - start.x)/ direction.x
 the smallest of the two distances is when our ray enters the slab, and the larger is when it enters the slab
 test all three axis of the aabb
 gather and compare the entry and exit points to look for overlaps
+
+============================
+Final Module - THE GAME
+============================
+
+DAY 1
+
+engine / game tours of Martin Andersson and Oscar Kamf (the teachers) work
+
+Tomorrow some more ECS and playmode stuff with Martin
+wednesday terrain from image generation
+next week catmul spline

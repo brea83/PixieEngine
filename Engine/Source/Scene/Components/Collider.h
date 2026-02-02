@@ -3,6 +3,7 @@
 #include <EnTT/entt.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <tuple>
 
 namespace Pixie
 {
@@ -32,6 +33,21 @@ namespace Pixie
 		bool Colliding{ false };
 
 		TransformComponent* Transform{ nullptr };
+
+		bool operator==(const Collider& other) const
+		{
+			return std::tie(Type, Colliding, Transform) == std::tie(other.Type, other.Colliding, other.Transform);
+		}
+
+		bool operator!=(const Collider& other) const
+		{
+			return !(*this == other);
+		}
+
+		bool operator<(const Collider& other) const
+		{
+			return Colliding < other.Colliding;
+		}
 	};
 
 	class SphereCollider : public Collider
