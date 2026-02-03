@@ -115,6 +115,8 @@ namespace Pixie
 		{
 			m_ActiveScene->Initialize();
 		}
+
+		// TODO: add scene change event to make sure when game changes scene it gets pushed to all relevant layers.
 	}
 
 	void EngineContext::Update()

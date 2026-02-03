@@ -92,6 +92,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Game\StateMachine\GameStates.cpp" />
     <ClCompile Include="Source\Editor\Panels\RenderInspectorPanel.cpp" />
     <ClCompile Include="Source\Editor\EditorLayer.cpp" />
     <ClCompile Include="Source\Editor\Panels\AssetViewerPanel.cpp" />
@@ -105,6 +106,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Game\StateMachine\GameStates.h" />
     <ClInclude Include="Source\Editor\Panels\RenderInspectorPanel.h" />
     <ClInclude Include="Source\Editor\EditorLayer.h" />
     <ClInclude Include="Source\Editor\Panels\AssetViewerPanel.h" />

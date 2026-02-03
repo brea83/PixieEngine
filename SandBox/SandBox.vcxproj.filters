@@ -33,6 +33,9 @@
     <ClCompile Include="Source\Editor\Panels\RenderInspectorPanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Game\StateMachine\GameStates.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Editor\EditorLayer.h">
@@ -48,6 +51,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Editor\Panels\RenderInspectorPanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\StateMachine\GameStates.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
