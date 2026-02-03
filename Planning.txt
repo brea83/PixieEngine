@@ -38,6 +38,7 @@ editor or runtime layer
 on play
 start game state machine
 
+should other layers know about Game? or just the layer running it?
 
 Game class 
 	contains a state machine

@@ -114,6 +114,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\DataStructures\KDTree.cpp" />
     <ClCompile Include="Source\Scene\Components\CollisionComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\Collider.cpp" />
@@ -209,6 +210,7 @@
     <ClCompile Include="Source\DataStructures\Trees.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Game.h" />
     <ClInclude Include="Source\DataStructures\KDTree.h" />
     <ClInclude Include="Source\Scene\Components\CollisionComponent.h" />
     <ClInclude Include="Source\Scene\Components\Collider.h" />

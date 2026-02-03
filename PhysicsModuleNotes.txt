@@ -145,3 +145,11 @@ engine / game tours of Martin Andersson and Oscar Kamf (the teachers) work
 Tomorrow some more ECS and playmode stuff with Martin
 wednesday terrain from image generation
 next week catmul spline
+
+============================
+Day 2 - ECS AND PLAYMODE	
+============================
+
+overview of philosophies around playmode, editor mode, and core engine separataions
+
+good slides on setting up an ecs system. really helps me more deeply understand what Entt is doing under the hood.

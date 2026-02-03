@@ -73,6 +73,7 @@
     <ClCompile Include="Source\Scene\Components\CollisionComponent.cpp" />
     <ClCompile Include="Source\DataStructures\KDTree.cpp" />
     <ClCompile Include="Source\DataStructures\Trees.cpp" />
+    <ClCompile Include="Source\Game.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\EnTT\entt.hpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="Source\Scene\Components\CollisionComponent.h" />
     <ClInclude Include="Source\DataStructures\KDTree.h" />
     <ClInclude Include="Source\DataStructures\Trees.h" />
+    <ClInclude Include="Source\Game.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Dependencies\assimp\assimp-vc143-mtd.lib" />
