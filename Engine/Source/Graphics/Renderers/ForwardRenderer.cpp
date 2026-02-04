@@ -64,16 +64,17 @@ namespace Pixie
 
 	}
 
-	void ForwardRenderer::BeginFrame(Scene& scene)
+	void ForwardRenderer::BeginFrame(std::shared_ptr<Scene> scene)
 	{
 		m_FrameBuffer->Bind();
 		glClearColor(0.2f, 0.1f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		if (scene == nullptr) return;
 		// prepare shared uniform buffers
 		// -----------------------------------
 		// Camera projection UBO
-		GameObject cameraEntity = scene.GetActiveCameraGameObject();
+		GameObject cameraEntity = scene->GetActiveCameraGameObject();
 		if (!cameraEntity)
 		{
 			m_bCameraFound = false;
@@ -104,7 +105,7 @@ namespace Pixie
 		m_CameraBlockUBO.UnBind();
 
 		// main light data needed for shadowmapping is in m_LightProjectionUBO
-		GameObject mainLight = scene.GetMainLight();
+		GameObject mainLight = scene->GetMainLight();
 		glm::mat4 lightSpaceMatrix = glm::mat4();
 		glm::vec4 hypotheticalLightPos{ 1.0f };
 
@@ -185,8 +186,9 @@ namespace Pixie
 
 	}
 
-	void ForwardRenderer::RenderFrame(Scene& scene)
+	void ForwardRenderer::RenderFrame(std::shared_ptr<Scene> scene)
 	{
+		if (scene == nullptr) return;
 
 		uint32_t prevPassDepth{ 0 };
 		uint32_t prevPassColor{ 0 };
@@ -199,7 +201,7 @@ namespace Pixie
 		}
 		else
 		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			glPolygonMode(GL_FRONT, GL_FILL);
 		}
 
 		for (size_t i = 0; i < m_Passes.size(); i++)
@@ -234,7 +236,7 @@ namespace Pixie
 
 	
 
-	void ForwardRenderer::EndFrame(Scene& scene)
+	void ForwardRenderer::EndFrame(std::shared_ptr<Scene> scene)
 	{
 		m_FrameBuffer->UnBind();
 	}

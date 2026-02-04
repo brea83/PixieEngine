@@ -12,9 +12,9 @@ namespace Pixie
 		ForwardRenderer(/*EngineContext* engineContext*/);
 		// Inherited via Renderer
 		void Init() override;
-		void BeginFrame(Scene& scene) override;
-		void RenderFrame(Scene& scene) override;
-		void EndFrame(Scene& scene) override;
+		void BeginFrame(std::shared_ptr<Scene> scene) override;
+		void RenderFrame(std::shared_ptr<Scene> scene) override;
+		void EndFrame(std::shared_ptr<Scene> scene) override;
 
 		virtual void ForceUnlit(bool value) override;
 		virtual void ForceWireFrame(bool value) override;

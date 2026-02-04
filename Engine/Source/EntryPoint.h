@@ -1,9 +1,7 @@
 #pragma once
 #include "Core.h"
-//#include "Application.h"
 #include "EngineContext.h"
-#include "Log.h"
-//#include "Scene/Scene.h"
+
 #ifdef  PIXIE_PLATFORM_WINDOWS
 
 extern Pixie::EngineContext* Pixie::CreateApplication();
@@ -16,16 +14,6 @@ int main(int argc, char** argv)
 	{
 		return -1;
 	}
-	
-	Pixie::Logger::Core(Pixie::LogLevel::Trace, "====================================================================");
-	Pixie::Logger::Core(Pixie::LogLevel::Trace, "EngineContext::Init() successfull   ie. program started");
-	Pixie::Logger::Core(Pixie::LogLevel::Trace, "====================================================================");
-#pragma region TEMPE POPULATE START SCENE
-	//engine->GetScene()->PopulateWithTestObjects();
-#pragma endregion 1 cube and 1 viking house
-
-	// uncomment this call to draw in wireframe polygons.
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// loop until the user closes window
 	while (engine->IsRunning()/*!glfwWindowShouldClose(glfw)*/)

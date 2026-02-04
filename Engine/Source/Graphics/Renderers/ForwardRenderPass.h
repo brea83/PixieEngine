@@ -18,7 +18,7 @@ namespace Pixie
 		ForwardRenderPass();
 		~ForwardRenderPass();
 		// Inherited via RenderPass
-		void Execute(Scene& sceneToRender, uint32_t prevPassDepthID = 0, uint32_t prevPassColorID = 0) override;
+		void Execute(std::shared_ptr<Scene> sceneToRender, uint32_t prevPassDepthID = 0, uint32_t prevPassColorID = 0) override;
 		std::shared_ptr<Shader> GetShader() override { return m_Shader; }
 		std::shared_ptr<FrameBuffer> GetFrameBuffer() const override { return nullptr; }
 		uint32_t GetFrameBufferID() const override { return 0; }

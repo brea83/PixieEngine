@@ -235,7 +235,20 @@ namespace Pixie
 
 	bool Scene::OnEvent(Event& event)
 	{
+		EventDispatcher dispatcher{ event };
+		dispatcher.Dispatch<SceneChangedEvent>(BIND_EVENT_FUNCTION(Scene::OnSceneChanged));
 		return m_CameraManager.OnEvent(event);
+	}
+
+	bool Scene::OnSceneChanged(SceneChangedEvent& event)
+	{
+		std::shared_ptr<Scene> newScene = event.GetScene();
+
+		if (*newScene != *this)
+		{
+			m_SceneState = SceneState::Pause;
+		}
+		return false; // this never consumes the event
 	}
 
 	GameObject Scene::CreateEmptyGameObject(const std::string& name)

@@ -14,9 +14,6 @@
 #include "Scene/Components/Transform.h"
 
 
-//#define BIND_EVENT_FUNCTION(x) std::bind(&x, this,  std::placeholders::_1)
-//#define BIND_EVENT_FUNCTION(x) [this](auto&&... args) -> decltype(auto){ return this->x(std::forward<decltype(args)>(args)...);}
-
 namespace Pixie
 {
 	EngineContext* EngineContext::m_Engine = nullptr;
@@ -63,8 +60,9 @@ namespace Pixie
 		if(m_EditorEnabled)
 			m_ImGuiLayer->OnAttach();
 
-		//m_PrevMouseX = m_MainWindow->WindowWidth() / 2.0f;
-		//m_PrevMouseY = m_MainWindow->WindowHeight() / 2.0f;
+		Pixie::Logger::Core(Pixie::LogLevel::Trace, "====================================================================");
+		Pixie::Logger::Core(Pixie::LogLevel::Trace, "EngineContext::Init() successfull   ie. program started");
+		Pixie::Logger::Core(Pixie::LogLevel::Trace, "====================================================================");
 
 		return true;
 	}
@@ -102,6 +100,20 @@ namespace Pixie
 	glm::vec2 EngineContext::GetWindowSize() const
 	{
 		return { glm::vec2(m_MainWindow->WindowWidth(), m_MainWindow->WindowHeight()) };
+	}
+
+	void EngineContext::ChangeScene(std::shared_ptr<Scene> newScene, bool isRuntimeOrPlaymodeSwap)
+	{
+		if (!m_Engine || !newScene) return;
+
+		SceneChangedEvent event(newScene, isRuntimeOrPlaymodeSwap);
+		m_Engine->EnqueEvent<SceneChangedEvent>(event);
+	}
+
+	bool EngineContext::OnSceneChangedEvent(SceneChangedEvent & event)
+	{
+		m_ActiveScene = event.GetScene();
+		return false;
 	}
 
 	void EngineContext::SetScene(std::shared_ptr<Scene> newScene, bool bAndInitialize)
@@ -149,11 +161,11 @@ namespace Pixie
 
 	void EngineContext::Draw()
 	{
-		if (!m_IsMinimized)
+		if (!m_IsMinimized )
 		{
-			m_Renderer->BeginFrame(*m_ActiveScene);
-			m_Renderer->RenderFrame(*m_ActiveScene);
-			m_Renderer->EndFrame(*m_ActiveScene);
+			m_Renderer->BeginFrame(m_ActiveScene);
+			m_Renderer->RenderFrame(m_ActiveScene);
+			m_Renderer->EndFrame(m_ActiveScene);
 		}
 
 		m_ImGuiLayer->Begin();
@@ -227,14 +239,14 @@ namespace Pixie
 		EventDispatcher dispatcher{ event };
 		dispatcher.Dispatch<WindowClosedEvent>(BIND_EVENT_FUNCTION(EngineContext::OnWindowClosed));
 		dispatcher.Dispatch<WindowResizedEvent>(BIND_EVENT_FUNCTION(EngineContext::OnFrameBufferSize));
-
+		dispatcher.Dispatch<SceneChangedEvent>(BIND_EVENT_FUNCTION(EngineContext::OnSceneChangedEvent));
 		//dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FUNCTION(EngineContext::OnKeyPressedEvent));
 
 		//dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FUNCTION(EngineContext::OnMouseButtonPressedEvent));
 		//dispatcher.Dispatch<MouseScrolledEvent>(BIND_EVENT_FUNCTION(EngineContext::OnMouseScrolled));
 		//dispatcher.Dispatch<MouseMovedEvent>(BIND_EVENT_FUNCTION(EngineContext::OnMouseMoved));
 
-		if (!event.Handled) m_ActiveScene->OnEvent(event);
+		if (!event.Handled && m_ActiveScene != nullptr) m_ActiveScene->OnEvent(event);
 	/*	if (event.GetEventType() == EventType::KeyPressed)
 		{
 			Logger::Core(LogLevel::Trace,"{} BEFORE ImGUILayer it is handled == {}", event.ToString(), event.Handled);

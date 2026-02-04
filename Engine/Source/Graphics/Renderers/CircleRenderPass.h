@@ -8,7 +8,7 @@ namespace Pixie
     public:
         CircleRenderPass();
         // Inherited via RenderPass
-        void Execute(Scene& sceneToRender, uint32_t prevPassDepthID, uint32_t prevPassColorID) override;
+        void Execute(std::shared_ptr<Scene> sceneToRender, uint32_t prevPassDepthID, uint32_t prevPassColorID) override;
         std::shared_ptr<Shader> GetShader() override { return m_Shader; }
         std::shared_ptr<FrameBuffer> GetFrameBuffer() const override { return nullptr; };
         uint32_t GetFrameBufferID() const override { return 0; };

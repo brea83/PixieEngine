@@ -21,6 +21,7 @@ namespace Pixie
 	
 	void PhysicsEngine::OnUpdate(std::shared_ptr<Scene> scene, float deltaTime)
 	{
+		if (scene == nullptr) return;
 		std::vector<CollisionEvent> lastFrameCollisions;
 		lastFrameCollisions.reserve(m_NewCollisions.size() + m_OngoingCollisions.size());
 		lastFrameCollisions.insert(lastFrameCollisions.end(), m_NewCollisions.begin(), m_NewCollisions.end());

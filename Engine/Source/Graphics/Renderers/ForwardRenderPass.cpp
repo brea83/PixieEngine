@@ -28,7 +28,7 @@ namespace Pixie
 	ForwardRenderPass::~ForwardRenderPass()
 	{ }
 
-	void ForwardRenderPass::Execute(Scene& sceneToRender, uint32_t prevPassDepthID, uint32_t prevPassColorID)
+	void ForwardRenderPass::Execute(std::shared_ptr<Scene> sceneToRender, uint32_t prevPassDepthID, uint32_t prevPassColorID)
 	{
 		m_Shader->Use();
 
@@ -47,7 +47,7 @@ namespace Pixie
 		}
 
 		// get scene registry for lighting and renderables
-		entt::registry& registry = sceneToRender.GetRegistry();
+		entt::registry& registry = sceneToRender->GetRegistry();
 
 		// set up light data
 		SendLightsToShader(registry);

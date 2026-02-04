@@ -27,7 +27,7 @@ namespace Pixie
 	ShadowPass::~ShadowPass()
 	{}
 
-	void ShadowPass::Execute(Scene& sceneToRender, uint32_t prevPassDepthID, uint32_t prevPassColorID)
+	void ShadowPass::Execute(std::shared_ptr<Scene> sceneToRender, uint32_t prevPassDepthID, uint32_t prevPassColorID)
 	{
 		if (m_LightsForcedOff) return;
 		// start rendering
@@ -36,7 +36,7 @@ namespace Pixie
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_FrameBuffer->GetColorAttachmentID());
 		// render meshes
-		entt::registry& registry = sceneToRender.GetRegistry();
+		entt::registry& registry = sceneToRender->GetRegistry();
 		auto group = registry.group<MeshComponent>(entt::get<TransformComponent>);
 
 		glCullFace(GL_FRONT);

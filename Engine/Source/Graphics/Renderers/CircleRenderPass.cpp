@@ -9,11 +9,11 @@ namespace Pixie
     {
         m_Shader = AssetLoader::LoadShader("../Assets/Shaders/CircleVertex.glsl", "../Assets/Shaders/CircleFragment.glsl");
     }
-    void CircleRenderPass::Execute(Scene& sceneToRender, uint32_t prevPassDepthID, uint32_t prevPassColorID)
+    void CircleRenderPass::Execute(std::shared_ptr<Scene> sceneToRender, uint32_t prevPassDepthID, uint32_t prevPassColorID)
     {
         m_Shader->Use();
         // get scene registry for renderables
-        entt::registry& registry = sceneToRender.GetRegistry();
+        entt::registry& registry = sceneToRender->GetRegistry();
 
         auto group = registry.group<CircleRendererComponent>(entt::get<TransformComponent>);
 

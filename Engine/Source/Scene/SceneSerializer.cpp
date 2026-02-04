@@ -33,6 +33,9 @@ namespace Pixie
 			GameObject object(entity, m_Scene);
 			fileStream.WriteObject(object);
 		}
+
+
+		m_Scene->m_Filepath = filePath;
 	}
 
 
@@ -53,6 +56,8 @@ namespace Pixie
 			fileStream.ReadObject<GameObject>(object);
 		}
 		m_Scene->Initialize();
+
+		m_Scene->m_Filepath = filePath;
 		return true;
 	}
 }

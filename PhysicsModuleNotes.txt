@@ -147,9 +147,20 @@ wednesday terrain from image generation
 next week catmul spline
 
 ============================
-Day 2 - ECS AND PLAYMODE	
+Day 2 - ECS AND PLAYMODE	- Martin
 ============================
 
 overview of philosophies around playmode, editor mode, and core engine separataions
 
 good slides on setting up an ecs system. really helps me more deeply understand what Entt is doing under the hood.
+
+============================
+Day 2 - Terrain from image & tool - Oscar Kamf
+============================
+tip not in the slides: it's easier to fill vbo and ebo in separate loops for the triangle strips for the terrain
+
+showcasing two ways of adding normals to the generated terrain
+the first method is old fashioned and looks better when there are more vertices than when there are few.
+
+showed a little live editing to demo how single vert difference in terrain will get ignored if its surrounds are all the same as eachother, even if the ignored vert has a very extreme height
+

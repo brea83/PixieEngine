@@ -8,7 +8,7 @@ namespace Pixie
 	// Game Base Class
 	//==========================
 
-	inline uint64_t Game::GetPlayerID(size_t playerIndex)
+	uint64_t Game::GetPlayerID(size_t playerIndex)
 	{
 		if (m_Players.size() > playerIndex)
 			return m_Players[playerIndex];
@@ -44,6 +44,22 @@ namespace Pixie
 		}
 
 		Logger::Core(LOG_WARNING, "Tried to add player (guid: {}), but they had already been added", std::to_string(guid));
+	}
+
+	void Game::AddScenePath(const std::string& label, std::filesystem::path path)
+	{
+		if (m_ScenePaths.find(label) != m_ScenePaths.end())
+		{
+			Logger::Core(LOG_WARNING, "tried to add a path to label {}, but that label already exists. Either create a new label or use ReplaceScenePath()", label);
+			return;
+		}
+
+		m_ScenePaths.at(label) = path;
+	}
+
+	void Game::ReplaceScenePath(const std::string& label, std::filesystem::path path)
+	{
+		m_ScenePaths.at(label) = path;
 	}
 
 	//==========================

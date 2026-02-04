@@ -28,5 +28,7 @@ namespace Pixie
 		glm::vec2 m_ViewportPanelSize{ 0.0f };
 		glm::vec2 m_ViewportBounds[2]{ {glm::vec2(0.0f, 0.0f)}, {glm::vec2(1.0f, 1.0f) } };
 		bool m_bViewportResized{ true };
+
+		virtual bool OnSceneChangedEvent(SceneChangedEvent& event) override { return false; }
 	};
 }

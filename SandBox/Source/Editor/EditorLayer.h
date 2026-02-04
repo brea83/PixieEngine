@@ -13,6 +13,7 @@ namespace Pixie
 	class RenderInspectorPanel;
 	class SceneHierarchyPanel;
 	class Renderer;
+	class ExampleGame;
 
 	//may need key, mouse, and application events
 	class EditorLayer : public ImGuiLayer
@@ -43,17 +44,21 @@ namespace Pixie
 
 		virtual void OnImGuiRender() override;
 
+	protected:
+		// this should never consume the event, all layers need to know a new scene is active
+		virtual bool OnSceneChangedEvent(SceneChangedEvent& event) override;
+
 	private:
 		std::shared_ptr<Scene> m_EditorScene{ nullptr };
 		std::shared_ptr<Scene> m_CurrentScene{ nullptr };
 		std::string m_CurrentScenePath{ "" };
 
 
-		SceneState m_SceneState{SceneState::Edit};
+		std::shared_ptr<ExampleGame> m_Game;
+
+		SceneState m_EditorState{SceneState::Edit};
 		std::string m_PlayPauseText{ "Play" };
 		
-
-
 		Renderer* m_CurrentRenderer{ nullptr };
 		bool m_ForceUnlit{ false };
 		std::string m_LitButtonString{ "Lit" };

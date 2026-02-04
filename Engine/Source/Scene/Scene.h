@@ -34,9 +34,13 @@ namespace Pixie
 		std::shared_ptr<Scene> GetPtr() { return shared_from_this(); }
 		~Scene();
 
+		std::filesystem::path GetFilepath() { return m_Filepath; }
 		std::string GetName() const { return m_Name; }
 		void SetName(const std::string& newName) { m_Name = newName; }
 		
+		SceneState GetSceneState() const { return m_SceneState; }
+		void SetSceneState(SceneState state) { m_SceneState = state; }
+
 		GameObject CreateEmptyGameObject(const std::string& name);
 		GameObject CreateGameObjectWithGUID(GUID guid, const std::string& name = "");
 		void RemoveGameObject(GameObject objectToRemove);
@@ -127,13 +131,28 @@ namespace Pixie
 		template<>
 		void OnComponentAdded<CameraController>(Entity& entity, CameraController& component);
 		
+
+		//comparison operators
+		bool operator==(const Scene& other) const
+		{
+			return m_Guid == other.m_Guid;
+		}
+
+		bool operator!=(const Scene& other) const
+		{
+			return !(*this == other);
+		}
 	private:
 		std::string m_Name{ "New Scene" };
 		entt::registry m_Registry;
-
+		GUID m_Guid;
+		std::filesystem::path m_Filepath{ "" };
 
 		CameraManager m_CameraManager;
 		SceneState m_SceneState{ SceneState::UnInitialized };
+
+
+		bool OnSceneChanged(SceneChangedEvent& event);
 
 		friend class SceneSerializer;
 		friend class Entity;

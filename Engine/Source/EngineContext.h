@@ -32,6 +32,7 @@ namespace Pixie
 
 		glm::vec2 GetWindowSize() const;
 
+		static void ChangeScene(std::shared_ptr<Scene> newScene, bool isRuntimeOrPlaymodeSwap);
 		void SetScene(std::shared_ptr<Scene> newScene, bool bAndInitialize = false);
 		std::shared_ptr<Scene> GetScene() { return m_ActiveScene; }
 
@@ -98,6 +99,7 @@ namespace Pixie
 		virtual bool OnMouseScrolled(MouseScrolledEvent& event);
 		virtual bool OnMouseMoved(MouseMovedEvent& event);
 		virtual bool OnKeyPressedEvent(KeyPressedEvent& event);
+		virtual bool OnSceneChangedEvent(SceneChangedEvent& event);
 
 	};
 	// To be defined in Client (ie SandBox)

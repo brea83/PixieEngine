@@ -15,9 +15,9 @@ namespace Pixie
 	{
 	public:
 		virtual void Init() = 0;
-		virtual void BeginFrame(Scene& scene) = 0;
-		virtual void RenderFrame(Scene& scene) = 0;
-		virtual void EndFrame(Scene& scene) = 0;
+		virtual void BeginFrame(std::shared_ptr<Scene> scene) = 0;
+		virtual void RenderFrame(std::shared_ptr<Scene> scene) = 0;
+		virtual void EndFrame(std::shared_ptr<Scene> scene) = 0;
 
 		std::shared_ptr<FrameBuffer> GetFrameBuffer() const { return m_FrameBuffer; }
 		virtual uint32_t GetFrameBufferID() { return m_FrameBuffer->GetColorAttachmentID(); }
@@ -44,3 +44,7 @@ namespace Pixie
 	};
 
 }
+
+
+// call this line to draw in wireframe polygons.
+//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

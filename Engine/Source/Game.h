@@ -58,23 +58,29 @@ namespace Pixie
 		virtual void AddPlayer(uint64_t guid);
 		
 
-		virtual void OnCreate() = 0;
-		virtual void OnBeginPlay() = 0;
-		virtual void OnUpdate() = 0;
+		virtual void OnCreate() { };
+		virtual void OnBeginPlay() {};
+		virtual void OnUpdate() {};
 
-		virtual void OnEvent(Event& event);
+		virtual bool OnEvent(Event& event) { return false; }
 
-		virtual void Pause() = 0;
-		virtual void UnPause() = 0;
+		virtual void Pause() {};
+		virtual void UnPause() {};
 
-		virtual void SetState(GameState newState) = 0;
+		virtual void SetState(GameState* newState) {};
 
-		virtual GameState* GetCurrentState() = 0;
-		virtual GameState* GetPreviousState() = 0;
+		virtual GameState* GetCurrentState() { return nullptr; }
+		virtual GameState* GetPreviousState() { return nullptr; }
+
+		virtual const std::unordered_map<std::string, std::filesystem::path>& GetScenePaths() const { return m_ScenePaths; }
+		virtual void AddScenePath(const std::string& label, std::filesystem::path path);
+		virtual void ReplaceScenePath(const std::string& label, std::filesystem::path path);
 
 	protected:
 		GameStateMachine m_GameStates;
 		std::vector<uint64_t> m_Players;
+
+		std::shared_ptr<Scene> m_CurrentScene{ nullptr };
 
 		// maybe replace this with a scene manager?
 		std::unordered_map<std::string, std::filesystem::path> m_ScenePaths;

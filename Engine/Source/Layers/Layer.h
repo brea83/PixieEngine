@@ -2,6 +2,7 @@
 #include "Core.h"
 #include <string>
 #include "Events/Event.h"
+#include "Events/ApplicationEvent.h"
 
 namespace Pixie
 {
@@ -21,5 +22,7 @@ namespace Pixie
 
 	protected:
 		std::string m_DebugName;
+		// this should never consume the event, all layers need to know a new scene is active
+		virtual bool OnSceneChangedEvent(SceneChangedEvent& event) = 0;
 	};
 }
