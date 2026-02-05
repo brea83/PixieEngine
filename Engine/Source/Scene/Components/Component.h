@@ -39,30 +39,6 @@ namespace Pixie
         IDComponent(const IDComponent&) = default;
     };
 
-    //enum class EditorBehaviorType
-    //{
-    //    EditorOnly,
-    //    EditorPlayMode,
-    //    All,
-    //    Count
-    //};
-
-    //const std::unordered_map<EditorBehaviorType, std::string> EditorBehaviorTypeToString = {
-    //    {EditorBehaviorType::EditorOnly, "Editor Only"},
-    //    {EditorBehaviorType::EditorPlayMode, "Editor Playmode"},
-    //    {EditorBehaviorType::All, "Editor and Release"},
-    //};
-
-    //struct EditorVsPlayBehaviorComponent
-    //{
-    //    EditorVsPlayBehaviorComponent() = default;
-    //    EditorVsPlayBehaviorComponent(const EditorVsPlayBehaviorComponent&) = default;
-
-    //    EditorBehaviorType RenderType{ EditorBehaviorType::All };
-    //    EditorBehaviorType UpdateType{ EditorBehaviorType::All };
-
-    //};
-
     struct TagComponent
     {
         TagComponent() = default;
@@ -140,10 +116,6 @@ namespace Pixie
         }
     };
 
-    
-
-
-
     enum LightType
     {
         Directional,
@@ -191,22 +163,38 @@ namespace Pixie
         }
     };
 
-    struct NativeScriptComponent
+    struct PlayerFollowCompononent
     {
-        GameObject* Instance{ nullptr };
+        PlayerFollowCompononent() = default;
+        PlayerFollowCompononent(const PlayerFollowCompononent&) = default;
 
-        GameObject*(*InstantiateScript)();
-        void(*DestroyScript)(NativeScriptComponent*);
+        glm::vec3 Offset{ 0.5f, 1.0f, 5.0f };
 
-        template<typename T>
-        void Bind()
-        {
-            InstantiateScript = []() { return static_cast<GameObject*>(new T()); };
-            DestroyScript = [](NativeScriptComponent* scriptComponent) { delete scriptComponent->Instance; scriptComponent->Instance = nullptr; };
-        }
+        static void on_construct(entt::registry& registry, const entt::entity entt);
+        static void on_destroy(entt::registry& registry, const entt::entity entt);
+    };
+
+    struct MovementComponent
+    {
+        MovementComponent() = default;
+        MovementComponent(const MovementComponent&) = default;
+
+        float Speed{ 1.0f };
+
+        void OnUpdate(float deltaTime);
+
+        static void on_construct(entt::registry& registry, const entt::entity entt);
+        static void on_destroy(entt::registry& registry, const entt::entity entt);
     };
 
     // empty components to use for organizing views and groups only
     struct EditorOnly
     { };
+
+    struct HasUpdateableComponents
+    {
+        HasUpdateableComponents() = default;
+        HasUpdateableComponents(HasUpdateableComponents&) = default;
+        bool temp{ true };
+    };
 }

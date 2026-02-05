@@ -120,17 +120,11 @@ namespace Pixie
 
 	void EngineContext::SetScene(std::shared_ptr<Scene> newScene, bool bAndInitialize)
 	{
-		/*if (m_ActiveScene)
-		{
-			delete m_ActiveScene;
-		}*/
 		m_ActiveScene = newScene;
 		if (bAndInitialize)
 		{
 			m_ActiveScene->Initialize();
 		}
-
-		// TODO: add scene change event to make sure when game changes scene it gets pushed to all relevant layers.
 	}
 
 	void EngineContext::Update()

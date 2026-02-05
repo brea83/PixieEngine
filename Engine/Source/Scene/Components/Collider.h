@@ -110,7 +110,7 @@ namespace Pixie
 			: Collider(ColliderType::Mesh)/*, Extents(0.5f)*/
 		{}
 		MeshCollider(const MeshCollider&) = default;
-		// TODO: HOW DO?
+		// TODO: HOW DO MESHCOLLIDER?
 		// Extents are half width, height, depth in x, y, z
 		//glm::vec3 Extents{ 0.5f };
 		static void Serialize(StreamWriter* stream, const MeshCollider& collider);
