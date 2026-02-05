@@ -5,32 +5,39 @@
 namespace Pixie
 {
 
+	// persistent states state machine, keeps one copy of each state and switches between them
 	class GameStateMachine
 	{
 	public:
-		void SwitchState(const std::string& stateType)
+		GameStateMachine() = default;
+		GameStateMachine(std::unordered_map<std::string_view, GameState*> states)
+			: m_States(states) { }
+
+		void SwitchState(const std::string_view& stateType)
 		{
 			if (m_States.find(stateType) != m_States.end())
 			{
 				//found state
+				GameState* nextState = m_States.at(stateType);
 				if (m_CurrentState != nullptr)
 				{
 					// TODO send event about state change state exit
-					m_CurrentState->ExitState();
+					m_CurrentState->ExitState(nextState);
 				}
 
 				m_PreviousState = m_CurrentState;
 				
-				m_CurrentState = m_States.at(stateType);
+				m_CurrentState = nextState;
 				// this is where a state change state enter event would be sent
-				m_CurrentState->EnterState();
+				m_CurrentState->EnterState(m_PreviousState);
 				return;
 			}
 
 			Logger::Core(LOG_WARNING, "State ({}) does not exist in state machine.", stateType);
 		}
 
-		void UpdateState();
+		void UpdateState(float deltaTime);
+
 
 	private:
 		std::unordered_map<std::string_view, GameState*> m_States;
@@ -60,14 +67,14 @@ namespace Pixie
 
 		virtual void OnCreate() { };
 		virtual void OnBeginPlay() {};
-		virtual void OnUpdate() {};
+		virtual void OnUpdate(float deltaTime) {};
 
 		virtual bool OnEvent(Event& event) { return false; }
 
 		virtual void Pause() {};
 		virtual void UnPause() {};
 
-		virtual void SetState(GameState* newState) {};
+		virtual void SetState(const std::string_view& stateType) {};
 
 		virtual GameState* GetCurrentState() { return nullptr; }
 		virtual GameState* GetPreviousState() { return nullptr; }
@@ -77,7 +84,7 @@ namespace Pixie
 		virtual void ReplaceScenePath(const std::string& label, std::filesystem::path path);
 
 	protected:
-		GameStateMachine m_GameStates;
+		GameStateMachine m_GameStateMachine;
 		std::vector<uint64_t> m_Players;
 
 		std::shared_ptr<Scene> m_CurrentScene{ nullptr };

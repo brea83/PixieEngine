@@ -1,14 +1,44 @@
 #include "ExampleGame.h"
 #include "BsPrecompileHeader.h"
+#include "../Game/StateMachine/GameStates.h"
+#include "EngineContext.h"
 
 namespace Pixie
 {
 	void ExampleGame::OnCreate()
-	{}
+	{
+		std::unordered_map<std::string_view, GameState*> states;
+		states.emplace(PauseState::Type(), new PauseState());
+		states.emplace(PlayingState::Type(), new PlayingState());
+
+		bool bIsEditorEnabled = EngineContext::GetEngine()->IsEditorEnabled();
+		if (bIsEditorEnabled)
+		{
+			states.emplace(EditState::Type(), new EditState());
+		}
+
+		m_GameStateMachine = GameStateMachine(states);
+
+		if (bIsEditorEnabled)
+			m_GameStateMachine.SwitchState(EditState::Type());
+		else
+			m_GameStateMachine.SwitchState(PauseState::Type());
+	}
+
+	void ExampleGame::OnBeginPlay(std::shared_ptr<Scene> scene)
+	{
+		m_CurrentScene = scene;
+		OnBeginPlay();
+	}
+
 	void ExampleGame::OnBeginPlay()
-	{}
-	void ExampleGame::OnUpdate()
-	{}
+	{ 
+		m_GameStateMachine.SwitchState(PlayingState::Type());
+	}
+	void ExampleGame::OnUpdate(float deltaTime)
+	{
+		m_GameStateMachine.UpdateState(deltaTime);
+	}
 
 
 	bool ExampleGame::OnEvent(Event & event)
@@ -16,7 +46,8 @@ namespace Pixie
 		EventDispatcher dispatcher{ event };
 		dispatcher.Dispatch<SceneChangedEvent>(BIND_EVENT_FUNCTION(ExampleGame::OnSceneChangedEvent));
 
-		m_CurrentScene->OnEvent(event);
+		if(m_CurrentScene)
+			m_CurrentScene->OnEvent(event);
 
 		return event.Handled;
 	}
@@ -24,15 +55,35 @@ namespace Pixie
 	bool ExampleGame::OnSceneChangedEvent(SceneChangedEvent& event)
 	{
 		m_CurrentScene = event.GetScene();
+
+		GameState* currentState = GetCurrentState();
+		if (currentState == nullptr)
+			return false;
+
+		if (currentState->GetType() == PlayingState::Type())
+			m_CurrentScene->BeginPlayMode();
+
+		if (currentState->GetType() == EditState::Type())
+			m_CurrentScene->EditMode();
+
+		if (currentState->GetType() == PauseState::Type())
+			m_CurrentScene->Pause();
+
 		return false;
 	}
 
 	void ExampleGame::Pause()
-	{}
+	{
+		m_GameStateMachine.SwitchState(PauseState::Type());
+	}
 	void ExampleGame::UnPause()
-	{}
-	void ExampleGame::SetState(GameState* newState)
-	{}
+	{
+		m_GameStateMachine.SwitchState(PlayingState::Type());
+	}
+	void ExampleGame::SetState(const std::string_view& stateType)
+	{
+		m_GameStateMachine.SwitchState(stateType);
+	}
 	GameState* ExampleGame::GetCurrentState()
 	{
 		return nullptr;

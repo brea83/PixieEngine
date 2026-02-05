@@ -4,6 +4,7 @@
 #include "Scene/SceneSerializer.h"
 #include "PlatformUtils.h"
 #include "../Game/ExampleGame.h"
+#include "../Game/StateMachine/GameStates.h"
 
 #include "ImGui/ImGuiPanel.h"
 #include <imgui_internal.h>
@@ -54,11 +55,10 @@ namespace Pixie
 		if (m_CurrentScene == newScene)
 			return false;
 		
-		if (m_EditorState == SceneState::Play)
+		/*if (m_EditorState == SceneState::Play)
 		{
 			m_CurrentScene->BeginPlayMode();
-		}
-
+		}*/
 		OnSceneChange(newScene, newScene->GetFilepath().string(), event.IsPlaymodeSwap());
 
 		return false;
@@ -106,6 +106,7 @@ namespace Pixie
 		Logger::GetCoreLogger()->sinks().push_back(imguiSink);
 		Logger::GetSandboxLogger()->sinks().push_back(imguiSink);
 
+		m_ViewportPanelSize = engine->GetWindowSize();
 		m_Game = std::make_shared<ExampleGame>();
 		//Pixie::Logger::Core(LOG_TRACE, "trace with formatting {}", 12);
 		//Pixie::Logger::Core(LOG_INFO, "info with formatting int: {0:d};  hex: {0:x};  oct: {0:o}; bin: {0:b}", 42);
@@ -120,11 +121,11 @@ namespace Pixie
 
 	void EditorLayer::OnEvent(Event& event)
 	{
+		if (m_Game)
+			m_Game->OnEvent(event);
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FUNCTION(EditorLayer::OnKeyPressed));
 
-		//if (m_Game)
-			//return m_Game->OnEvent(event);
 	}
 
 	void EditorLayer::OnScenePlay()
@@ -139,9 +140,12 @@ namespace Pixie
 		m_CurrentScene = runtimeCopy;
 		m_CurrentScene->Initialize();
 
-		m_CurrentScene->BeginPlayMode();
+		//m_CurrentScene->BeginPlayMode();
 		m_EditorState = SceneState::Play;
 		m_PlayPauseText = "Pause";
+
+		if (m_Game)
+			m_Game->OnBeginPlay(m_CurrentScene);
 
 		OnSceneChange(m_CurrentScene);
 	}
@@ -149,26 +153,42 @@ namespace Pixie
 	void EditorLayer::OnScenePause()
 	{
 		m_EditorState = SceneState::Pause;
-		m_CurrentScene->Pause();
+		//m_CurrentScene->Pause();
 		m_PlayPauseText = "Play";
+
+		if (m_Game)
+			m_Game->SetState(PauseState::Type());
 	}
 
 	void EditorLayer::OnSceneStop()
 	{
 		m_EditorState = SceneState::Edit;
 		m_PlayPauseText = "Play";
-		if (m_CurrentScene != nullptr)
+		/*if (m_CurrentScene != nullptr)
 		{
 			m_CurrentScene->EndPlayMode();
 
 			m_CurrentScene = m_EditorScene;
 			EngineContext::GetEngine()->SetScene(m_CurrentScene);
 			OnSceneChange(m_CurrentScene);
+		}*/
+
+		if (m_CurrentScene != nullptr)
+		{
+			m_Game->SetState(EditState::Type()); // end playmode on current scene
+
+			m_CurrentScene = m_EditorScene;
+			EngineContext::GetEngine()->SetScene(m_CurrentScene);
+			OnSceneChange(m_CurrentScene);
 		}
+
+		if (m_Game == nullptr)
+			return;
+		m_Game->SetState(EditState::Type()); // make sure editor scene is still in edit mode
 	}
 
 	void EditorLayer::OnUpdate(float deltaTime)
-	{
+	{/*
 		if (m_CurrentScene == nullptr) return;
 		
 		SceneState sceneState = m_CurrentScene->GetSceneState();
@@ -176,7 +196,11 @@ namespace Pixie
 		if (m_EditorState == SceneState::Edit)
 			m_CurrentScene->OnEditorUpdate(deltaTime);
 		else if (m_EditorState == SceneState::Play)
-			m_CurrentScene->OnUpdate(deltaTime);
+			m_CurrentScene->OnUpdate(deltaTime);*/
+
+		if (m_Game == nullptr) return;
+
+		m_Game->OnUpdate(deltaTime);
 	}
 
 	void EditorLayer::NewScene()
@@ -184,7 +208,8 @@ namespace Pixie
 		if (m_EditorState != SceneState::Edit)
 			OnSceneStop();
 		std::shared_ptr<Scene> newScene = Scene::Create();
-		EngineContext::GetEngine()->SetScene(newScene, true);
+		//EngineContext::GetEngine()->SetScene(newScene, true);
+		EngineContext::GetEngine()->ChangeScene(newScene, false);
 		OnSceneChange(newScene, "", false);
 	}
 
@@ -226,7 +251,9 @@ namespace Pixie
 			SceneSerializer serializer(loadedScene);
 			serializer.Deserialize(filePath);
 			OnSceneChange(loadedScene, filePath, false);
+			EngineContext::GetEngine()->ChangeScene(loadedScene, false);
 		}
+
 	}
 
 	bool EditorLayer::TryDuplicateSelected()

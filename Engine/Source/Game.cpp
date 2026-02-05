@@ -66,10 +66,10 @@ namespace Pixie
 	// Game State Machine
 	//==========================
 
-	void GameStateMachine::UpdateState()
+	void GameStateMachine::UpdateState(float deltaTime)
 	{
 		if (m_CurrentState == nullptr) return;
-		m_CurrentState->UpdateState();
+		m_CurrentState->UpdateState(deltaTime);
 	}
 
 }

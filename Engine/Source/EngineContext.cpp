@@ -113,6 +113,8 @@ namespace Pixie
 	bool EngineContext::OnSceneChangedEvent(SceneChangedEvent & event)
 	{
 		m_ActiveScene = event.GetScene();
+		if (m_ActiveScene->GetSceneState() == SceneState::UnInitialized)
+			m_ActiveScene->Initialize();
 		return false;
 	}
 
@@ -246,7 +248,7 @@ namespace Pixie
 		//dispatcher.Dispatch<MouseScrolledEvent>(BIND_EVENT_FUNCTION(EngineContext::OnMouseScrolled));
 		//dispatcher.Dispatch<MouseMovedEvent>(BIND_EVENT_FUNCTION(EngineContext::OnMouseMoved));
 
-		if (!event.Handled && m_ActiveScene != nullptr) m_ActiveScene->OnEvent(event);
+		//if (!event.Handled && m_ActiveScene != nullptr) m_ActiveScene->OnEvent(event);
 	/*	if (event.GetEventType() == EventType::KeyPressed)
 		{
 			Logger::Core(LogLevel::Trace,"{} BEFORE ImGUILayer it is handled == {}", event.ToString(), event.Handled);

@@ -65,6 +65,7 @@ namespace Pixie
 		void EditMode();
 
 		void Pause() { m_SceneState = SceneState::Pause; }
+		void UnPause() { m_SceneState = SceneState::Play; }
 
 		void OnUpdate(float deltaTime);
 		void OnEditorUpdate(float deltaTime);

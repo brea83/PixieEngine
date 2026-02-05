@@ -3,13 +3,14 @@
 
 namespace Pixie
 {
+	//class Scene;
 	class GameState
 	{
 	public:
 		virtual const std::string_view GetType() const = 0;
-		virtual void EnterState() = 0;
-		virtual void ExitState() = 0;
-		virtual void UpdateState() = 0;
+		virtual void EnterState(GameState* previousState) = 0;
+		virtual void ExitState(GameState* nextState) = 0;
+		virtual void UpdateState(float deltaTime) = 0;
 	};
 
 	
