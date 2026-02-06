@@ -65,7 +65,7 @@ uniform MaterialData Material;
 uniform sampler2D shadowMap;
 uniform float lightNearPlane;
 uniform float lightFarPlane;
-uniform float shadowBiasMult = 0.000059; // values under 1 seem better, below zero creates a lot of shadow acne
+uniform float shadowBiasMult = 0.000065; // values under 1 seem better, below zero creates a lot of shadow acne
 
 uniform vec4 ambientLight = vec4(0.05, 0.05, 0.05, 1.0);
 uniform int  lightTypes[MAX_LIGHTS];
