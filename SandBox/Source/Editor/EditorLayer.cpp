@@ -125,6 +125,7 @@ namespace Pixie
 			m_Game->OnEvent(event);
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FUNCTION(EditorLayer::OnKeyPressed));
+		dispatcher.Dispatch<SceneChangedEvent>(BIND_EVENT_FUNCTION(EditorLayer::OnSceneChangedEvent));
 
 	}
 
@@ -136,18 +137,26 @@ namespace Pixie
 		if (runtimeCopy == nullptr) return;
 
 		EngineContext::GetEngine()->SetScene(runtimeCopy);
-		
-		m_CurrentScene = runtimeCopy;
+		//
+		//m_CurrentScene = runtimeCopy;
 		m_CurrentScene->Initialize();
 
-		//m_CurrentScene->BeginPlayMode();
+		////m_CurrentScene->BeginPlayMode();
+		//m_EditorState = SceneState::Play;
+		//m_PlayPauseText = "Pause";
+
+		//if (m_Game)
+		//	m_Game->OnBeginPlay(m_CurrentScene);
+
+		//OnSceneChange(m_CurrentScene);
+
+		EngineContext::GetEngine()->ChangeScene(runtimeCopy, true);
+
 		m_EditorState = SceneState::Play;
 		m_PlayPauseText = "Pause";
 
 		if (m_Game)
-			m_Game->OnBeginPlay(m_CurrentScene);
-
-		OnSceneChange(m_CurrentScene);
+			m_Game->SetState(PlayingState::Type());
 	}
 
 	void EditorLayer::OnScenePause()
@@ -177,9 +186,10 @@ namespace Pixie
 		{
 			m_Game->SetState(EditState::Type()); // end playmode on current scene
 
-			m_CurrentScene = m_EditorScene;
-			EngineContext::GetEngine()->SetScene(m_CurrentScene);
-			OnSceneChange(m_CurrentScene);
+			//m_CurrentScene = m_EditorScene;
+			//EngineContext::GetEngine()->SetScene(m_CurrentScene);
+			//OnSceneChange(m_CurrentScene);
+			EngineContext::GetEngine()->ChangeScene(m_EditorScene, true);
 		}
 
 		if (m_Game == nullptr)
@@ -606,6 +616,9 @@ namespace Pixie
 			buttonSize.x += ImGui::CalcTextSize("PAUSE").x;
 
 			ImGui::SetCursorPosX(offset - buttonSize.x);
+
+			bool bEditorModeBeforeButtonPresses = m_EditorState == SceneState::Edit;
+
 			if (ImGui::Button(m_PlayPauseText.c_str(), buttonSize))
 			{
 				if (m_EditorState == SceneState::Edit)
@@ -618,11 +631,18 @@ namespace Pixie
 				}
 			}
 
+			if (bEditorModeBeforeButtonPresses)
+			{
+				ImGui::BeginDisabled();
+			}
 			if (ImGui::Button("Stop"))
 			{
 				OnSceneStop();
 			}
-
+			if (bEditorModeBeforeButtonPresses)
+			{
+				ImGui::EndDisabled();
+			}
 			ImGui::EndMenuBar();
 		}
 

@@ -74,19 +74,24 @@ namespace Pixie
     {
         GameObject activeCam = GameObject(m_ActiveCamera, m_Scene);
         CameraController* controller = activeCam.TryGetComponent<CameraController>();
-        if (!controller) return;
+        if (!controller || controller->IsEditorOnly()) return;
         controller->OnUpdate(deltaTime, activeCam);
     }
 
     bool CameraManager::OnEvent(Event& event)
     {
-        EventDispatcher dispatcher{ event };
+        //EventDispatcher dispatcher{ event };
         //dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FUNCTION(CameraManager::OnKeyPressed));
 
         if (!event.Handled)
         {
             CameraController* controllerComponent = m_Scene->GetRegistry().try_get<CameraController>(m_ActiveCamera);
-            if (!controllerComponent) return false;
+            if (!controllerComponent) 
+                return false;
+
+            if (m_Scene->GetSceneState() != SceneState::Edit && controllerComponent->IsEditorOnly())
+                return false;
+
             return controllerComponent->OnEvent(event);
         }
 

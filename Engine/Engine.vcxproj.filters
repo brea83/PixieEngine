@@ -75,6 +75,7 @@
     <ClCompile Include="Source\DataStructures\Trees.cpp" />
     <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\GameState.cpp" />
+    <ClCompile Include="Source\Scene\Player\PlayerInput.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\EnTT\entt.hpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="Source\DataStructures\Trees.h" />
     <ClInclude Include="Source\Game.h" />
     <ClInclude Include="Source\GameState.h" />
+    <ClInclude Include="Source\Scene\Player\PlayerInput.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Dependencies\assimp\assimp-vc143-mtd.lib" />

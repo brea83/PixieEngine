@@ -14,6 +14,10 @@ namespace Pixie
     };
 
     //player follow component
+    void PlayerFollowCompononent::OnUpdate(float deltaTime)
+    {
+
+    }
 
     void PlayerFollowCompononent::on_construct(entt::registry& registry, const entt::entity entt)
     {
@@ -36,6 +40,11 @@ namespace Pixie
 
 
     // movement component 
+
+    //void MovementComponent::OnUpdate(float deltaTime)
+    //{
+
+    //}
 
     void MovementComponent::on_construct(entt::registry& registry, const entt::entity entt)
     {

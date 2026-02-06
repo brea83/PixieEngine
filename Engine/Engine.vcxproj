@@ -114,6 +114,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Scene\Player\PlayerInput.cpp" />
     <ClCompile Include="Source\GameState.cpp" />
     <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\DataStructures\KDTree.cpp" />
@@ -211,6 +212,7 @@
     <ClCompile Include="Source\DataStructures\Trees.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Scene\Player\PlayerInput.h" />
     <ClInclude Include="Source\GameState.h" />
     <ClInclude Include="Source\Game.h" />
     <ClInclude Include="Source\DataStructures\KDTree.h" />

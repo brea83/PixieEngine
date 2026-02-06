@@ -36,7 +36,6 @@ namespace Pixie
 
 			DrawStringProperty("Name", nameComp.Name, editingName);
 
-
 			if (ImGui::BeginPopupContextItem("AddComponentPopUp"))
 			{
 				if (ImGui::Selectable("Mesh Component"))
@@ -64,6 +63,16 @@ namespace Pixie
 				{
 					selected->AddComponent<CollisionComponent>();
 				}
+
+				if (ImGui::Selectable("Player Input component"))
+				{
+					selected->AddComponent<PlayerInputComponent>();
+				}
+
+				if (ImGui::Selectable("Movement component"))
+				{
+					selected->AddComponent<MovementComponent>();
+				}
 				ImGui::EndPopup();
 			}
 			if (ImGui::Button("AddComponent"))
@@ -71,8 +80,18 @@ namespace Pixie
 				ImGui::OpenPopup("AddComponentPopUp");
 			}
 
+			IDComponent* id = selected->TryGetComponent<IDComponent>();
+			
+			std::string guid = "0";
+			if(id)
+				guid = std::to_string((uint64_t)id->ID);
 
-			//	
+			std::string enttID = std::to_string((uint32_t)selected->GetEnttHandle());
+
+			ImGui::BeginDisabled();
+			DrawStringProperty("Player GUID", guid, guid);
+			DrawStringProperty("Player Entt ID", enttID, enttID);
+			ImGui::EndDisabled();
 
 			ImGui::SeparatorText("Componenets");
 			DrawComponents(scene, *selected/*selectedObject->GetAllComponents()*/);
@@ -346,6 +365,79 @@ namespace Pixie
 
 			ImGui::TextWrapped("There is a known issue with ImGuizmo's Rotation gizmo:");
 			ImGui::TextWrapped("If the camera forward vector is paralel to one of the gizmo circle planes those handles will not behave.");
+		}
+
+		if (selected.HasCompoenent<PlayerInputComponent>())
+		{
+			ImGui::PushID("PlayerInput");
+			ImGui::Separator();
+			PlayerInputComponent& component = selected.GetComponent<PlayerInputComponent>();
+			ImGui::Text("Input Component");
+			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 25.0f);
+
+			ImVec2 buttonSize{ ImGui::CalcTextSize("X").x + (ImGui::GetStyle().FramePadding.x * 2.0f),
+			ImGui::CalcTextSize("X").y + (ImGui::GetStyle().FramePadding.y * 2.0f) };
+
+			bool removeComponent{ false };
+			if (ImGui::Button("X", buttonSize))
+			{
+				removeComponent = true;
+			}
+
+			ImGui::Separator();
+
+			std::string guid = std::to_string(component.PlayerGUID);
+			std::string enttID = std::to_string((uint32_t)component.PlayerEnttID);
+
+			ImGui::BeginDisabled();
+			DrawStringProperty("Player GUID", guid, guid);
+			DrawStringProperty("Player Entt ID", enttID, enttID);
+			ImGui::EndDisabled();
+
+			ImGui::PopID();
+
+			if (removeComponent)
+			{
+				selected.RemoveComponent<PlayerInputComponent>();
+			}
+		}
+
+		if (selected.HasCompoenent<MovementComponent>())
+		{
+			ImGui::PushID("MoveComponent");
+			ImGui::Separator();
+			MovementComponent& component = selected.GetComponent<MovementComponent>();
+			ImGui::Text("Movement Component");
+			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 25.0f);
+
+			ImVec2 buttonSize{ ImGui::CalcTextSize("X").x + (ImGui::GetStyle().FramePadding.x * 2.0f),
+			ImGui::CalcTextSize("X").y + (ImGui::GetStyle().FramePadding.y * 2.0f) };
+
+			bool removeComponent{ false };
+			if (ImGui::Button("X", buttonSize))
+			{
+				removeComponent = true;
+			}
+
+			ImGui::Separator();
+
+			SliderParams params;
+			params.ResetValue = 1.0f;
+			params.Speed = 0.01f;
+
+			DrawFloatControl("Speed", component.Speed, params);
+
+			ImGui::BeginDisabled();
+			glm::vec3 direction = component.Direction;
+			DrawVec3Control("Direction", direction, params);
+			ImGui::EndDisabled();
+
+			ImGui::PopID();
+
+			if (removeComponent)
+			{
+				selected.RemoveComponent<MovementComponent>();
+			}
 		}
 
 		if (selected.HasCompoenent<MeshComponent>())
@@ -691,7 +783,7 @@ namespace Pixie
 			CameraController& component = selected.GetComponent<CameraController>();
 
 			ImGui::Text("Camera Controller");
-			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 25.0f);
+			/*ImGui::SameLine(ImGui::GetContentRegionAvail().x - 25.0f);
 
 			ImVec2 buttonSize{ ImGui::CalcTextSize("X").x + (ImGui::GetStyle().FramePadding.x * 2.0f),
 			ImGui::CalcTextSize("X").y + (ImGui::GetStyle().FramePadding.y * 2.0f) };
@@ -701,8 +793,16 @@ namespace Pixie
 			{
 				removeComponent = true;
 			}
-			ImGui::SetItemTooltip("Cannot Remove Controller via ui at this time");
+			ImGui::SetItemTooltip("Cannot Remove Controller via ui at this time");*/
 			ImGui::Separator();
+
+			ImGui::Text("Fly In Editor Only ");
+			ImGui::SameLine();
+			bool bEditorOnly = component.IsEditorOnly();
+			if(ImGui::Checkbox("##IsEditorOnly", &bEditorOnly))
+			{
+				component.SetEditorOnly(bEditorOnly);
+			}
 
 			ImGui::Text("Focal Point");
 			ImGui::SameLine();

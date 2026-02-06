@@ -37,7 +37,7 @@ namespace Pixie
 
 		if (scene == nullptr) return;
 
-		if (previousState == nullptr)
+		if (previousState == nullptr || previousState->GetType() != PauseState::Type())
 			scene->BeginPlayMode();
 		else
 			scene->UnPause();
@@ -49,7 +49,7 @@ namespace Pixie
 
 		if (scene == nullptr) return;
 
-		if (nextState == nullptr) 
+		if (nextState == nullptr || nextState->GetType() != PauseState::Type())
 			scene->EndPlayMode();
 
 	}

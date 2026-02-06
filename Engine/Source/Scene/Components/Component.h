@@ -13,6 +13,7 @@
 #include "CollisionComponent.h"
 
 
+
 namespace Pixie
 {
     enum class SerializableComponentID
@@ -29,6 +30,8 @@ namespace Pixie
         CircleRenderer,
         IDComponent,
         CollisionComponent,
+        PlayerInput,
+        MovementComponent
     };
 
     struct IDComponent
@@ -163,12 +166,38 @@ namespace Pixie
         }
     };
 
+    struct PlayerInputComponent
+    {
+        PlayerInputComponent() = default;
+        PlayerInputComponent(entt::entity entt, GUID guid, bool isActive)
+            :PlayerEnttID(entt), PlayerGUID(guid), BIsActive(isActive) { }
+
+        PlayerInputComponent(PlayerInputComponent&) = default;
+
+
+        entt::entity PlayerEnttID{ entt::null };
+        GUID PlayerGUID;
+        bool BIsActive{ true };
+        //List of components what take inputs?
+
+        static void on_construct(entt::registry& registry, const entt::entity entt)
+        {
+            IDComponent& id = registry.get<IDComponent>(entt);
+            PlayerInputComponent& component = registry.get<PlayerInputComponent>(entt);
+
+            component.PlayerEnttID = entt;
+            component.PlayerGUID = id.ID;
+        }
+    };
+
     struct PlayerFollowCompononent
     {
         PlayerFollowCompononent() = default;
         PlayerFollowCompononent(const PlayerFollowCompononent&) = default;
 
         glm::vec3 Offset{ 0.5f, 1.0f, 5.0f };
+
+        void OnUpdate(float deltaTime);
 
         static void on_construct(entt::registry& registry, const entt::entity entt);
         static void on_destroy(entt::registry& registry, const entt::entity entt);
@@ -180,11 +209,23 @@ namespace Pixie
         MovementComponent(const MovementComponent&) = default;
 
         float Speed{ 1.0f };
+        glm::vec3 Direction{ 0.0f };
 
-        void OnUpdate(float deltaTime);
+        //void OnUpdate(float deltaTime);
 
         static void on_construct(entt::registry& registry, const entt::entity entt);
         static void on_destroy(entt::registry& registry, const entt::entity entt);
+
+        static void Serialize(StreamWriter* stream, const MovementComponent& component)
+        {
+            stream->WriteRaw(component.Speed);
+        }
+        static bool Deserialize(StreamReader* stream, MovementComponent& component)
+        {
+            stream->ReadRaw(component.Speed);
+            component.Direction = glm::vec3(0.0f);
+            return true;
+        }
     };
 
     // empty components to use for organizing views and groups only

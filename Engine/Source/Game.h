@@ -38,7 +38,8 @@ namespace Pixie
 
 		void UpdateState(float deltaTime);
 
-
+		GameState* GetCurrentState() { return m_CurrentState; }
+		GameState* GetPreviousState() { return m_CurrentState; }
 	private:
 		std::unordered_map<std::string_view, GameState*> m_States;
 		GameState* m_CurrentState{ nullptr };

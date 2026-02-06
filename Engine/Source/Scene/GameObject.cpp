@@ -22,6 +22,32 @@ namespace Pixie
 	void GameObject::OnUpdate(float deltaTime)
 	{
 		//Logger::Core(LOG_TRACE, "GameObject update, entity id: {}", (int)m_EntityHandle);
+		
+		Move(deltaTime);
+	}
+
+	void GameObject::Move(float deltaTime)
+	{
+		MovementComponent* moveComponent = TryGetComponent<MovementComponent>();
+		if (moveComponent == nullptr) 
+			return;
+
+		if (moveComponent->Direction == glm::vec3(0.0f))
+			return;
+
+		TransformComponent& transform = GetTransform();
+
+			glm::vec3 direction = glm::normalize(moveComponent->Direction);
+			float velocity = moveComponent->Speed * deltaTime; // adjust accordingly
+
+			glm::vec3 forward = transform.Forward() * direction.z;
+			glm::vec3 right = transform.Right() * direction.x;
+			glm::vec3 up = transform.Up() * direction.y;
+
+			glm::vec3 currentPosition = transform.GetPosition();
+
+			transform.SetPosition(currentPosition + (velocity * (forward + right + up)));
+	
 	}
 
 	void GameObject::Serialize(StreamWriter* fileWriter, const GameObject& object)
@@ -47,6 +73,8 @@ namespace Pixie
 		CameraController* camController = object.TryGetComponent<CameraController>();
 		CircleRendererComponent* circleComponent = object.TryGetComponent<CircleRendererComponent>();
 		CollisionComponent* collision = object.TryGetComponent<CollisionComponent>();
+		PlayerInputComponent* inputComponent = object.TryGetComponent<PlayerInputComponent>();
+		MovementComponent* movement = object.TryGetComponent<MovementComponent>();
 
 		std::vector<SerializableComponentID> components;
 		if (tag) components.push_back(SerializableComponentID::TagComponent);
@@ -59,6 +87,8 @@ namespace Pixie
 		if (camController) components.push_back(SerializableComponentID::CameraController);
 		if (circleComponent) components.push_back(SerializableComponentID::CircleRenderer);
 		if (collision) components.push_back(SerializableComponentID::CollisionComponent);
+		if (inputComponent) components.push_back(SerializableComponentID::PlayerInput);
+		if (movement) components.push_back(SerializableComponentID::MovementComponent);
 
 		fileWriter->WriteArray<SerializableComponentID>(components);
 
@@ -126,6 +156,9 @@ namespace Pixie
 						break;
 					}
 				}
+
+				if (id == SerializableComponentID::MovementComponent)
+					fileWriter->WriteObject(object.GetComponent<MovementComponent>());
 			}
 		}
 
@@ -240,6 +273,20 @@ namespace Pixie
 
 				continue;
 			}
+
+			if (id == SerializableComponentID::MovementComponent)
+			{
+				MovementComponent& component = object.GetOrAddComponent<MovementComponent>();
+				//fileReader->ReadObject(component);
+				continue;
+			}
+
+			if (id == SerializableComponentID::PlayerInput)
+			{
+				object.GetOrAddComponent<PlayerInputComponent>();
+				continue;
+			}
+
 		}
 
 		return true;

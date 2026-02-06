@@ -98,7 +98,14 @@ namespace Pixie
 		 TryCopyEntityComponent<CameraComponent>(destination, source);
 		 TryCopyEntityComponent<CameraController>(destination, source);
 		 TryCopyEntityComponent<CollisionComponent>(destination, source);
+		 TryCopyEntityComponent<MovementComponent>(destination, source);
 
+		 if (source.HasCompoenent<PlayerInputComponent>())
+		 {
+			 PlayerInputComponent& sourceComp = source.GetComponent<PlayerInputComponent>();
+			 PlayerInputComponent& destinationComp = destination.AddComponent<PlayerInputComponent>();
+			 destinationComp.BIsActive = sourceComp.BIsActive;
+		 }
 	 }
 	 static void TryCopyAllComponents(GameObject destination, GameObject source)
 	 {
@@ -166,6 +173,9 @@ namespace Pixie
 		CopyRegistryComponents<CollisionComponent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
 		CopyRegistryComponents<SphereCollider>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
 		CopyRegistryComponents<CubeCollider>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
+		CopyRegistryComponents<PlayerInputComponent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
+		CopyRegistryComponents<MovementComponent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
+		CopyRegistryComponents<PlayerFollowCompononent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
 
 		return newScene;
 	}
@@ -225,7 +235,8 @@ namespace Pixie
 	{
 		EventDispatcher dispatcher{ event };
 		dispatcher.Dispatch<SceneChangedEvent>(BIND_EVENT_FUNCTION(Scene::OnSceneChanged));
-		return m_CameraManager.OnEvent(event);
+		m_CameraManager.OnEvent(event);
+		return event.Handled;
 	}
 
 	bool Scene::OnSceneChanged(SceneChangedEvent& event)

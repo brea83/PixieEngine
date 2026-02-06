@@ -54,6 +54,7 @@ namespace Pixie
 	protected:
 		//entt::entity m_SerializedID{ entt::null };
 
+		virtual void Move(float deltaTime);
 	private:
 		friend class Scene;
 	};

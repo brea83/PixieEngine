@@ -1,5 +1,6 @@
 #pragma once
 #include "Source/Game.h"
+#include "Scene/Player/PlayerInput.h"
 
 namespace Pixie
 {
@@ -7,6 +8,7 @@ namespace Pixie
 	{
 	public:
 		ExampleGame() { OnCreate(); }
+		~ExampleGame();
 		// Inherited via Game
 		void OnCreate() override;
 		void OnBeginPlay(std::shared_ptr<Scene> scene);
@@ -22,7 +24,7 @@ namespace Pixie
 		GameState* GetPreviousState() override;
 
 	private:
-
+		PlayerInputSystem* m_InputSystem{ nullptr };
 		bool OnSceneChangedEvent(SceneChangedEvent& event);
 	};
 }

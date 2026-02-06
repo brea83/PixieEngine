@@ -40,6 +40,9 @@ namespace Pixie
 		//bool HandleKeyInput(TransformComponent* transform, Inputs::Keyboard keyCode, float deltaTime);
 		//bool HandleMouseLook(TransformComponent* transform, float xOffset, float yOffset, float deltaTime);
 		
+		bool IsEditorOnly() { return m_IsEditorOnly; }
+		void SetEditorOnly(bool value) { m_IsEditorOnly = value; }
+
 		CameraMoveType GetMoveType(){ return m_Type; }
 		void SetMoveType(CameraMoveType type);
 
@@ -64,6 +67,7 @@ namespace Pixie
 		Scene* m_Scene{ nullptr };*/
 		CameraMoveType m_Type{ CameraMoveType::END };
 		
+		bool m_IsEditorOnly{ true };
 
 		bool m_Rotation{ false };
 		glm::vec3 m_CameraPosition{ 0.0f };
