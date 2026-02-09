@@ -41,11 +41,6 @@ namespace Pixie
 
     // movement component 
 
-    //void MovementComponent::OnUpdate(float deltaTime)
-    //{
-
-    //}
-
     void MovementComponent::on_construct(entt::registry& registry, const entt::entity entt)
     {
         HasUpdateableComponents* component = registry.try_get<HasUpdateableComponents>(entt);
@@ -63,4 +58,24 @@ namespace Pixie
 
         registry.remove<HasUpdateableComponents>(entt);
     }
+
+    // orbit component
+
+    void OrbitComponent::on_construct(entt::registry& registry, const entt::entity entt)
+    {
+        MovementComponent* movement = registry.try_get<MovementComponent>(entt);
+        if (movement == nullptr)
+        {
+            registry.emplace<MovementComponent>(entt);
+            return;
+        }
+
+        HasUpdateableComponents* updateable = registry.try_get<HasUpdateableComponents>(entt);
+        if (updateable)
+            return;
+        else
+            registry.emplace<HasUpdateableComponents>(entt);
+
+    }
+    
 }

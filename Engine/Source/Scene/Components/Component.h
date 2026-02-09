@@ -211,8 +211,6 @@ namespace Pixie
         float Speed{ 1.0f };
         glm::vec3 Direction{ 0.0f };
 
-        //void OnUpdate(float deltaTime);
-
         static void on_construct(entt::registry& registry, const entt::entity entt);
         static void on_destroy(entt::registry& registry, const entt::entity entt);
 
@@ -224,6 +222,30 @@ namespace Pixie
         {
             stream->ReadRaw(component.Speed);
             component.Direction = glm::vec3(0.0f);
+            return true;
+        }
+    };
+
+    struct OrbitComponent
+    {
+        OrbitComponent() = default;
+        OrbitComponent(const OrbitComponent&) = default;
+
+        glm::vec3 Origin{ 0.0f };
+        float Radius{ 1.0f };
+        //MovementComponent* MovementComponent{ nullptr };
+
+        static void on_construct(entt::registry& registry, const entt::entity entt);
+
+        static void Serialize(StreamWriter* stream, const OrbitComponent& component)
+        {
+            stream->WriteRaw<glm::vec3>(component.Origin);
+            stream->WriteRaw<float>(component.Radius);
+        }
+        static bool Deserialize(StreamReader* stream, OrbitComponent& component)
+        {
+            stream->ReadRaw<glm::vec3>(component.Origin);
+            stream->ReadRaw<float>(component.Radius);
             return true;
         }
     };
