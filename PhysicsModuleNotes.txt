@@ -155,7 +155,7 @@ overview of philosophies around playmode, editor mode, and core engine separatai
 good slides on setting up an ecs system. really helps me more deeply understand what Entt is doing under the hood.
 
 ============================
-Day 2 - Terrain from image & tool - Oscar Kamf
+Day 3 - Terrain from image & tool - Oscar Kamf
 ============================
 tip not in the slides: it's easier to fill vbo and ebo in separate loops for the triangle strips for the terrain
 
@@ -164,3 +164,35 @@ the first method is old fashioned and looks better when there are more vertices 
 
 showed a little live editing to demo how single vert difference in terrain will get ignored if its surrounds are all the same as eachother, even if the ignored vert has a very extreme height
 
+============================
+Day 4 - Catmul rom spline - Martin
+============================
+
+CUBIC BEZIER CURVES
+
+--- de casteljau method. expensive but straightforward
+imagine lerping along all line segments by the same time T,
+for three segments we get three points
+	we then lerp along the two new segments created by those points
+	and so on untill there's only one segment to lerp along
+
+	all by the same t value
+
+	that final lerp value is a curve
+
+--- there are ways to condense the math 
+	 bernstein cubic bezier
+
+need a min 4 points per segment.
+	can reuse the final point of a segment for the next segment
+
+ned to use a scaled T = t * segment count; to lerp along the WHOLE line
+
+
+CATMUL ROM
+
+0 and 3 are controll points, and line passes through point 1 and 2
+
+segments are pushed by direction between  control point and point
+
+this type of spline uses far fewer controll points and lets the pass through points act as controllpoints

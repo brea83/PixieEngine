@@ -76,6 +76,7 @@
     <ClCompile Include="Source\Game.cpp" />
     <ClCompile Include="Source\GameState.cpp" />
     <ClCompile Include="Source\Scene\Player\PlayerInput.cpp" />
+    <ClCompile Include="Source\Scene\Components\SplineComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\EnTT\entt.hpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="Source\Game.h" />
     <ClInclude Include="Source\GameState.h" />
     <ClInclude Include="Source\Scene\Player\PlayerInput.h" />
+    <ClInclude Include="Source\Scene\Components\SplineComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Dependencies\assimp\assimp-vc143-mtd.lib" />
