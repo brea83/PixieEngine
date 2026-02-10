@@ -73,6 +73,11 @@ namespace Pixie
 				{
 					selected->AddComponent<MovementComponent>();
 				}
+
+				if (ImGui::Selectable("Spline component"))
+				{
+					selected->AddComponent<SplineComponent>();
+				}
 				ImGui::EndPopup();
 			}
 			if (ImGui::Button("AddComponent"))
@@ -365,6 +370,69 @@ namespace Pixie
 
 			ImGui::TextWrapped("There is a known issue with ImGuizmo's Rotation gizmo:");
 			ImGui::TextWrapped("If the camera forward vector is paralel to one of the gizmo circle planes those handles will not behave.");
+		}
+
+		if (selected.HasCompoenent<SplineComponent>())
+		{
+			ImGui::PushID("Spline");
+			ImGui::Separator();
+			SplineComponent& component = selected.GetComponent<SplineComponent>();
+			ImGui::Text("Slpine Component");
+			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 25.0f);
+
+			ImVec2 buttonSize{ ImGui::CalcTextSize("X").x + (ImGui::GetStyle().FramePadding.x * 2.0f),
+			ImGui::CalcTextSize("X").y + (ImGui::GetStyle().FramePadding.y * 2.0f) };
+
+			bool removeComponent{ false };
+			if (ImGui::Button("X", buttonSize))
+			{
+				removeComponent = true;
+			}
+
+			ImGui::Separator();
+
+			ImGui::Text("Type");
+			ImGui::SameLine();
+			ImGui::BeginDisabled();
+			int currentType = static_cast<int>(component.Type);
+			if (ImGui::Combo("##ColliderType", &currentType, SplineComponent::TypeNames, IM_ARRAYSIZE(SplineComponent::TypeNames)))
+			{
+				Logger::Core(LOG_DEBUG, "test");
+			}
+
+			ImGui::Text("Is Loop ");
+			ImGui::SameLine();
+			ImGui::Checkbox("##isLoop", &component.IsLoop);
+			ImGui::EndDisabled();
+
+
+			float previewTime = component.PreviewTime;
+			float maxTime = component.GetNumSegments() + 1.0f;
+			SliderParams params;
+			params.Min = 0.0f;
+			params.Max = maxTime;
+			params.Speed = 0.01f;
+
+			DrawFloatControl("Preview T", previewTime, params);
+
+			ImGui::Text("Debug Color");
+			ImGui::SameLine();
+			ImGui::ColorEdit3("##Color", glm::value_ptr(component.DebugColor));
+
+			ImGui::Text("Segments ");
+			ImGui::SameLine();
+			int segmentCount = component.GetNumSegments();
+			if (ImGui::InputInt("##segmentCount", &segmentCount))
+			{
+				Logger::Core(LOG_DEBUG, "segment count changed to {}", segmentCount);
+			}
+
+			ImGui::PopID();
+
+			if (removeComponent)
+			{
+				selected.RemoveComponent<SplineComponent>();
+			}
 		}
 
 		if (selected.HasCompoenent<PlayerInputComponent>())

@@ -2,21 +2,41 @@
 #include "Transform.h"
 namespace Pixie
 {
-    struct SplineComponent
+    enum class SplineType
     {
-        SplineComponent() = default;
+        Linear,
+        CubicBezier,
+        Cardinal,
+        CatmulRom,
+        B,
+        //NURBS?
+        END
+    };
 
+    struct SegmentRelativeT
+    {
+        int Segment{ 0 };
+        float SegmentT{ 0.0f };
+    };
+
+    class SplineComponent
+    {
+    public:
+        SplineComponent() = default;
         SplineComponent(SplineComponent&) = default;
 
         glm::vec4 DebugColor{ 0.5f, 0.5f, 1.0f, 1.0f };
-        //curve type :linear, catmul, cubic bezier
+        SplineType Type{ SplineType::Linear };
         bool IsLoop{ false };
         float PreviewTime{ 0.0f };
         std::vector<TransformComponent> Points;
 
-        void AddSegment();
-        glm::vec3 GetTangent(float T);
+        static const char* TypeNames[(unsigned long long)SplineType::END];
 
+        void AddSegment();
+        void RemoveSegment();
+        glm::vec3 GetTangent(float T);
+        int GetNumSegments();
 
         static void Serialize(StreamWriter* stream, const SplineComponent& component)
         {
@@ -33,5 +53,20 @@ namespace Pixie
             stream->ReadArray<TransformComponent>(component.Points);
             return true;
         }
+
+    private:
     };
+
+    namespace Spline
+    {
+        static SegmentRelativeT GetTSegmentData(float t);
+        //linearly interpolate postision along linear spline at time t
+        static glm::vec3 LinearPos(const SplineComponent& spline, float t);
+
+        // interpolate position along spline at time t
+        static glm::vec3 DeCasteljauPos(const SplineComponent& spline, float t);
+
+        static void 
+    }
+
 }
