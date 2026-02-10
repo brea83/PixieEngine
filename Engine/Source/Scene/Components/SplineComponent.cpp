@@ -23,16 +23,16 @@ namespace Pixie
 			// glm::mix = (1 - t)pointA + (t * pointB)
 
 			//linear splines share end points so start at indexes 0, and mult of 2
-			int startIndex = input.Segment * 2;
-			if (startIndex >= spline.Points.size() && !spline.IsLoop)
+			int startIndex = input.Segment;
+			if (startIndex + 1 >= spline.Points.size() && !spline.IsLoop)
 			{
 				// time has passed the end of the spline
-				return spline.Points[spline.Points.size() - 1]->ReadOnlyPosition();
+				return glm::vec3(spline.Points[spline.Points.size() - 1]->GetObjectToWorldMatrix()[3]);
 			}
 
 			
-			glm::vec3 start = spline.Points[startIndex]->ReadOnlyPosition();
-			glm::vec3  end = spline.Points[startIndex + 1]->ReadOnlyPosition();
+			glm::vec3 start = spline.Points[startIndex]->GetObjectToWorldMatrix()[3];
+			glm::vec3  end = spline.Points[startIndex + 1]->GetObjectToWorldMatrix()[3];
 			return glm::mix(start, end, input.SegmentT);
 		}
 
@@ -45,13 +45,13 @@ namespace Pixie
 			if (startIndex >= spline.Points.size() && !spline.IsLoop)
 			{
 				// time has passed the end of the spline
-				return spline.Points[spline.Points.size() - 1]->ReadOnlyPosition();
+				return spline.Points[spline.Points.size() - 1]->GetObjectToWorldMatrix()[3];
 			}
 
-			glm::vec3 pointA = spline.Points[startIndex + 0]->ReadOnlyPosition();
-			glm::vec3 pointB = spline.Points[startIndex + 1]->ReadOnlyPosition(); // controll point
-			glm::vec3 pointC = spline.Points[startIndex + 2]->ReadOnlyPosition(); // controll point
-			glm::vec3 pointD = spline.Points[startIndex + 3]->ReadOnlyPosition();
+			glm::vec3 pointA = spline.Points[startIndex + 0]->GetObjectToWorldMatrix()[3];
+			glm::vec3 pointB = spline.Points[startIndex + 1]->GetObjectToWorldMatrix()[3]; // controll point
+			glm::vec3 pointC = spline.Points[startIndex + 2]->GetObjectToWorldMatrix()[3]; // controll point
+			glm::vec3 pointD = spline.Points[startIndex + 3]->GetObjectToWorldMatrix()[3];
 
 			glm::vec3 lerpA = glm::mix(pointA, pointB, input.SegmentT);
 			glm::vec3 lerpB = glm::mix(pointB, pointC, input.SegmentT);
@@ -203,6 +203,30 @@ namespace Pixie
 		}
 
 		return -1;
+	}
+
+	glm::vec3 SplineComponent::GetPostionT(float T)
+	{
+		if (Points.size() <= 0)
+			return glm::vec3(0.0f);
+
+		switch (Type)
+		{
+		case Pixie::SplineType::Linear:
+			return Spline::LinearPos(*this, T);
+		case Pixie::SplineType::CubicBezier:
+			return Spline::DeCasteljauPos(*this, T);
+		case Pixie::SplineType::Cardinal:
+			break;
+		case Pixie::SplineType::CatmulRom:
+			break;
+		case Pixie::SplineType::B:
+			break;
+		default:
+			break;
+		}
+
+		return glm::vec3(-1.0f);
 	}
 
 	

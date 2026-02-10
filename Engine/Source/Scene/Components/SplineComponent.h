@@ -40,6 +40,7 @@ namespace Pixie
         void RemoveSegment(GameObject& splineObject);
         glm::vec3 GetTangent(float T);
         int GetNumSegments();
+        glm::vec3 GetPostionT(float T);
 
         static void Serialize(StreamWriter* stream, const SplineComponent& component)
         {

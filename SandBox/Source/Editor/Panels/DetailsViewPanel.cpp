@@ -393,17 +393,15 @@ namespace Pixie
 
 			ImGui::Text("Type");
 			ImGui::SameLine();
-			ImGui::BeginDisabled();
 			int currentType = static_cast<int>(component.Type);
 			if (ImGui::Combo("##ColliderType", &currentType, SplineComponent::TypeNames, IM_ARRAYSIZE(SplineComponent::TypeNames)))
 			{
-				Logger::Core(LOG_DEBUG, "test");
+				component.Type = static_cast<SplineType>(currentType);
 			}
 
 			ImGui::Text("Is Loop ");
 			ImGui::SameLine();
 			ImGui::Checkbox("##isLoop", &component.IsLoop);
-			ImGui::EndDisabled();
 
 
 			float previewTime = component.PreviewTime;

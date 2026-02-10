@@ -277,9 +277,13 @@ namespace Pixie
 
         m_LocalMatrix = translation * rotation * scale;
 
+
         m_PositionDirty = false;
         m_ScaleDirty = false;
         m_RotationDirty = false;
+
+        if (m_ParentGuid != 0)
+            m_WorldMatrix = GetObjectToWorldMatrix();
     }
 
     void TransformComponent::Decompose(glm::mat4 const& modelMatrix, glm::vec3& scale, glm::quat& orientation, glm::vec3& translation)

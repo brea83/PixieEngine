@@ -1,7 +1,10 @@
 #version 450 core
 layout (location = 0) in vec3 vertexPosition;
 
+// if bilboarding precalculate the view and model matrices into this one
 uniform mat4 Transform;
+
+uniform bool IsBillboard = true;
 
 layout (std140, binding = 0) uniform CameraBlock
 {
@@ -20,9 +23,18 @@ out VS_OUT
 
 void main()
 {
-	gl_Position = projection * view * Transform * vec4(vertexPosition, 1.0);
 
-    OUT.Pos_OS = vertexPosition;
-    OUT.Pos_WS =  vec3(Transform * vec4(vertexPosition, 1.0));
-    OUT.Pos_CS = vec3(view * Transform * vec4(vertexPosition, 1.0));
+    if(!IsBillboard)
+    {
+    	gl_Position = projection * view * Transform * vec4(vertexPosition, 1.0);
+        OUT.Pos_OS = vertexPosition;
+        OUT.Pos_WS =  vec3(Transform * vec4(vertexPosition, 1.0));
+        OUT.Pos_CS = vec3(view * Transform * vec4(vertexPosition, 1.0));
+    }
+    else
+    {
+        
+        gl_Position = projection * Transform * vec4(vertexPosition, 1.0);
+    }
+
 }

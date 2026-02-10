@@ -21,5 +21,8 @@ namespace Pixie
         bool m_BDrawDebug{ true };
 
         void SetCircleUniforms(CircleRendererComponent& circle);
+
+        void DrawSphereColliders(entt::registry& registry);
+        void DrawSplineDebug(entt::registry& registry, glm::mat4& viewMatrix);
     };
 }
