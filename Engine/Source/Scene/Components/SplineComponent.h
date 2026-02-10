@@ -19,6 +19,8 @@ namespace Pixie
         float SegmentT{ 0.0f };
     };
 
+    class GameObject;
+
     class SplineComponent
     {
     public:
@@ -29,12 +31,13 @@ namespace Pixie
         SplineType Type{ SplineType::Linear };
         bool IsLoop{ false };
         float PreviewTime{ 0.0f };
-        std::vector<TransformComponent> Points;
+        std::vector<TransformComponent*> Points;
+        std::vector<uint32_t> PointEnttIds;
 
         static const char* TypeNames[(unsigned long long)SplineType::END];
 
-        void AddSegment();
-        void RemoveSegment();
+        void AddSegment(GameObject& splineObject);
+        void RemoveSegment(GameObject& splineObject);
         glm::vec3 GetTangent(float T);
         int GetNumSegments();
 
@@ -43,14 +46,14 @@ namespace Pixie
             stream->WriteRaw<glm::vec4>(component.DebugColor);
             stream->WriteRaw<bool>(component.IsLoop);
             stream->WriteRaw<float>(component.PreviewTime);
-            stream->WriteArray<TransformComponent>(component.Points);
+            //stream->WriteArray<TransformComponent>(component.Points);
         }
         static bool Deserialize(StreamReader* stream, SplineComponent& component)
         {
             stream->ReadRaw<glm::vec4>(component.DebugColor);
             stream->ReadRaw<bool>(component.IsLoop);
             stream->ReadRaw<float>(component.PreviewTime);
-            stream->ReadArray<TransformComponent>(component.Points);
+            //stream->ReadArray<TransformComponent>(component.Points);
             return true;
         }
 
@@ -66,7 +69,6 @@ namespace Pixie
         // interpolate position along spline at time t
         static glm::vec3 DeCasteljauPos(const SplineComponent& spline, float t);
 
-        static void 
     }
 
 }

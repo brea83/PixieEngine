@@ -693,11 +693,35 @@ namespace Pixie
 		ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y,
 			m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
 
+		// if selected as a spline component draw gizmos for that too
+		//if (m_Selected->HasCompoenent<SplineComponent>())
+			//DrawSplineGizmos(camera, viewMatrix);
+
 		TransformComponent& transform = m_Selected->GetTransform();
 		//if (transform == nullptr) return;
+		
+		DrawGizmo(transform, camera, viewMatrix);
+	}
+
+	void EditorLayer::DrawSplineGizmos(Camera* camera, glm::mat4& viewMatrix)
+	{
+		SplineComponent& spline = m_Selected->GetComponent<SplineComponent>();
+
+		if (spline.Points.size() <= 0)
+			return;
+
+		for (int i = 0; i < spline.Points.size(); i++)
+		{
+			TransformComponent& transform = *spline.Points[i];
+			DrawGizmo(transform, camera, viewMatrix);
+		}
+	}
+
+	void EditorLayer::DrawGizmo(TransformComponent & transform, Camera * camera, glm::mat4 & viewMatrix)
+	{
 		glm::mat4 transformMatrix = transform.GetObjectToWorldMatrix();
 		//glm::mat4 localTransform = transform.GetLocal();
-		
+
 		glm::vec3 oldTranslation;
 		glm::vec3 oldRotation;
 		glm::vec3 oldScale;

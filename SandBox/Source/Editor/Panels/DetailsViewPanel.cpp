@@ -421,10 +421,14 @@ namespace Pixie
 
 			ImGui::Text("Segments ");
 			ImGui::SameLine();
-			int segmentCount = component.GetNumSegments();
-			if (ImGui::InputInt("##segmentCount", &segmentCount))
+			int oldSegmentCount = component.GetNumSegments();
+			int newSegmentCount = oldSegmentCount;
+			if (ImGui::InputInt("##segmentCount", &newSegmentCount))
 			{
-				Logger::Core(LOG_DEBUG, "segment count changed to {}", segmentCount);
+				if (newSegmentCount > oldSegmentCount)
+					component.AddSegment(selected);
+				if (newSegmentCount < oldSegmentCount)
+					component.RemoveSegment(selected);
 			}
 
 			ImGui::PopID();

@@ -85,6 +85,8 @@ namespace Pixie
 
 		void DrawGridLines(Camera* camera);
 		void DrawGizmos(Camera* camera, glm::mat4 viewMatrix);
+		void DrawSplineGizmos(Camera* camera, glm::mat4& viewMatrix);
+		void DrawGizmo(TransformComponent& transform, Camera* camera, glm::mat4& viewMatrix);
 
 		bool OnKeyPressed(KeyPressedEvent& event);
 	};
