@@ -33,7 +33,7 @@ namespace Pixie
         bool IsLoop{ false };
         float PreviewTime{ 0.0f };
         std::vector<TransformComponent*> Points;
-        std::vector<uint32_t> PointEnttIds;
+        std::vector<entt::entity> PointEnttIds;
 
         static const char* TypeNames[(unsigned long long)SplineType::END];
 

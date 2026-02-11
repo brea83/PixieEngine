@@ -175,19 +175,7 @@ namespace Pixie
 		{
 			int newIndex = indexB >= 0 ? indexB + 1 : 0;
 			glm::vec3 newPosition = pointB + nextPointDirection;
-			//glm::vec3 nextPointRotation = indexB >= 0 ? Points[indexB]->GetRotationEuler() : glm::vec3(0.0f);
 			AddPoint( splineObject, newIndex, newPosition, nextPointRotation);
-
-			/*std::string name = "Spline Point " + std::to_string(newIndex);
-			GameObject newPoint = scene->CreateEmptyGameObject(name);
-			splineObject.AddChild(newPoint);
-
-			PointEnttIds.push_back(newPoint);
-			TransformComponent* transform = newPoint.TryGetComponent<TransformComponent>();
-			transform->SetPosition(pointB + nextPointDirection);
-			transform->SetRotationEuler(nextPointRotation);
-			Points.push_back(transform);*/
-
 
 			if (Points.size() < 2)
 			{
@@ -195,17 +183,6 @@ namespace Pixie
 				newPosition = pointB + nextPointDirection;
 				newIndex++;
 				AddPoint( splineObject, newIndex, newPosition, nextPointRotation);
-				//TransformComponent newPosition = TransformComponent(pointB + nextPointDirection, nextPointRotation, glm::vec3(1.0f));
-				//Points.push_back(newPosition);
-				/*std::string name = "Spline Point " + std::to_string(newIndex);
-				GameObject newPoint = scene->CreateEmptyGameObject(name);
-				splineObject.AddChild(newPoint);
-
-				PointEnttIds.push_back(newPoint);
-				TransformComponent* transform = newPoint.TryGetComponent<TransformComponent>();
-				transform->SetPosition(pointB + nextPointDirection);
-				transform->SetRotationEuler(nextPointRotation);
-				Points.push_back(transform);*/
 			}
 			break;
 		}
@@ -218,26 +195,10 @@ namespace Pixie
 			}
 			for (int i = 0; i < pointsToAdd; i++)
 			{
-
 				if (i == 1 && nextPointDirection.x == 0.0f && nextPointDirection.y == 0.0f && nextPointDirection.z == 0.0f)
 				{
 					nextPointDirection.x = 1.0f;
 				}
-
-				/*int newIndex = indexB >= 0 ? indexB + 1 : 0;
-				std::string name = "Spline Point " + std::to_string(newIndex);
-				GameObject newPoint = scene->CreateEmptyGameObject(name);
-				splineObject.AddChild(newPoint);
-
-				PointEnttIds.push_back(newPoint);
-				TransformComponent* transform = newPoint.TryGetComponent<TransformComponent>();
-				transform->SetPosition(pointB + nextPointDirection);
-				transform->SetRotationEuler(nextPointRotation);
-				Points.push_back(transform);
-
-				pointA = pointB;
-				pointB = transform->GetPosition();
-				indexB++;*/
 
 				int newIndex = indexB >= 0 ? indexB + 1 : 0;
 				glm::vec3 newPosition = pointB + nextPointDirection;
@@ -262,7 +223,49 @@ namespace Pixie
 
 	void SplineComponent::RemoveSegment(GameObject& splineObject)
 	{
-		Logger::Core(LOG_DEBUG, "TODO: Implement SplineComponent::RemoveSegment()");
+		if (Points.size() == 0)
+			return;
+
+		std::shared_ptr<Scene> scene = EngineContext::GetEngine()->GetScene();
+		switch (m_Type)
+		{
+		case Pixie::SplineType::Linear:
+		{
+			Points.pop_back();
+			scene->RemoveGameObject(GameObject(PointEnttIds.back(), scene));
+			PointEnttIds.pop_back();
+			if (Points.size() == 1)
+			{
+				Points.pop_back();
+				scene->RemoveGameObject(GameObject(PointEnttIds.back(), scene));
+				PointEnttIds.pop_back();
+			}
+			return;
+		}
+		case Pixie::SplineType::CubicBezier:
+		{
+			int numToRemove = 3;
+			if (Points.size() <= 4)
+			{
+				numToRemove = Points.size();
+			}
+			for (int i = 0; i < numToRemove; i++)
+			{
+				Points.pop_back();
+				scene->RemoveGameObject(GameObject(PointEnttIds.back(), scene));
+				PointEnttIds.pop_back();
+			}
+			return;
+		}
+		case Pixie::SplineType::Cardinal:
+			break;
+		case Pixie::SplineType::CatmulRom:
+			break;
+		case Pixie::SplineType::B:
+			break;
+		default:
+			break;
+		}
 	}
 
 	glm::vec3 SplineComponent::GetTangent(float T)

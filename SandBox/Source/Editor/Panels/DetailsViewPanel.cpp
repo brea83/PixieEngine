@@ -399,9 +399,9 @@ namespace Pixie
 				component.SetType( static_cast<SplineType>(currentType));
 			}
 
-			ImGui::Text("Is Loop ");
+			/*ImGui::Text("Is Loop ");
 			ImGui::SameLine();
-			ImGui::Checkbox("##isLoop", &component.IsLoop);
+			ImGui::Checkbox("##isLoop", &component.IsLoop);*/
 
 
 			float previewTime = component.PreviewTime;
