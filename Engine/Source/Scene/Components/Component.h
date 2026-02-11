@@ -31,7 +31,8 @@ namespace Pixie
         IDComponent,
         CollisionComponent,
         PlayerInput,
-        MovementComponent
+        MovementComponent,
+        SplineComponent,
     };
 
     struct IDComponent
@@ -216,11 +217,11 @@ namespace Pixie
 
         static void Serialize(StreamWriter* stream, const MovementComponent& component)
         {
-            stream->WriteRaw(component.Speed);
+            stream->WriteRaw<float>(component.Speed);
         }
         static bool Deserialize(StreamReader* stream, MovementComponent& component)
         {
-            stream->ReadRaw(component.Speed);
+            stream->ReadRaw<float>(component.Speed);
             component.Direction = glm::vec3(0.0f);
             return true;
         }

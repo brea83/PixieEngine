@@ -75,6 +75,7 @@ namespace Pixie
 		CollisionComponent* collision = object.TryGetComponent<CollisionComponent>();
 		PlayerInputComponent* inputComponent = object.TryGetComponent<PlayerInputComponent>();
 		MovementComponent* movement = object.TryGetComponent<MovementComponent>();
+		SplineComponent* spline = object.TryGetComponent<SplineComponent>();
 
 		std::vector<SerializableComponentID> components;
 		if (tag) components.push_back(SerializableComponentID::TagComponent);
@@ -89,6 +90,7 @@ namespace Pixie
 		if (collision) components.push_back(SerializableComponentID::CollisionComponent);
 		if (inputComponent) components.push_back(SerializableComponentID::PlayerInput);
 		if (movement) components.push_back(SerializableComponentID::MovementComponent);
+		if (spline) components.push_back(SerializableComponentID::SplineComponent);
 
 		fileWriter->WriteArray<SerializableComponentID>(components);
 
@@ -157,9 +159,14 @@ namespace Pixie
 					}
 				}
 
-				if (id == SerializableComponentID::MovementComponent)
-					fileWriter->WriteObject(object.GetComponent<MovementComponent>());
 			}
+
+			if (id == SerializableComponentID::MovementComponent)
+				fileWriter->WriteObject(object.GetComponent<MovementComponent>());
+
+			if (id == SerializableComponentID::SplineComponent)
+				fileWriter->WriteObject(object.GetComponent<SplineComponent>());
+
 		}
 
 	}
@@ -277,7 +284,7 @@ namespace Pixie
 			if (id == SerializableComponentID::MovementComponent)
 			{
 				MovementComponent& component = object.GetOrAddComponent<MovementComponent>();
-				//fileReader->ReadObject(component);
+				fileReader->ReadObject(component);
 				continue;
 			}
 
@@ -287,6 +294,15 @@ namespace Pixie
 				continue;
 			}
 
+			if (id == SerializableComponentID::SplineComponent)
+			{
+				SplineComponent& component = object.GetOrAddComponent< SplineComponent>();
+
+				fileReader->ReadObject(component);
+				continue;
+			}
+
+			
 		}
 
 		return true;

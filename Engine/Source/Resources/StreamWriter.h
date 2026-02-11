@@ -2,6 +2,7 @@
 #include <string>
 #include <map>
 #include <unordered_map>
+#include <glm/glm.hpp>
 
 namespace Pixie
 {

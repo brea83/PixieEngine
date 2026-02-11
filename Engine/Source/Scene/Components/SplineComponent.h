@@ -13,6 +13,14 @@ namespace Pixie
         END
     };
 
+    struct SplinePointComponent
+    {
+        SplinePointComponent() = default;
+        SplinePointComponent(SplinePointComponent&) = default;
+
+        uint64_t SplineParentGUID{ 0 };
+    };
+
     struct SegmentRelativeT
     {
         int Segment{ 0 };
@@ -34,6 +42,7 @@ namespace Pixie
         float PreviewTime{ 0.0f };
         std::vector<TransformComponent*> Points;
         std::vector<entt::entity> PointEnttIds;
+        std::vector<uint64_t> PointIDs;
 
         static const char* TypeNames[(unsigned long long)SplineType::END];
 
@@ -45,17 +54,25 @@ namespace Pixie
 
         static void Serialize(StreamWriter* stream, const SplineComponent& component)
         {
+            stream->WriteRaw<int>(static_cast<int>(component.m_Type));
             stream->WriteRaw<glm::vec4>(component.DebugColor);
             stream->WriteRaw<bool>(component.IsLoop);
             stream->WriteRaw<float>(component.PreviewTime);
-            //stream->WriteArray<TransformComponent>(component.Points);
+            stream->WriteArray<uint64_t>(component.PointIDs);
+            
         }
+
         static bool Deserialize(StreamReader* stream, SplineComponent& component)
         {
+            int typeAsInt = 0;
+            stream->ReadRaw<int>(typeAsInt);
+            if (typeAsInt >= 0 && typeAsInt <= static_cast<int>(SplineType::END))
+                component.m_Type = static_cast<SplineType>(typeAsInt);
+
             stream->ReadRaw<glm::vec4>(component.DebugColor);
             stream->ReadRaw<bool>(component.IsLoop);
             stream->ReadRaw<float>(component.PreviewTime);
-            //stream->ReadArray<TransformComponent>(component.Points);
+            stream->ReadArray<uint64_t>(component.PointIDs);
             return true;
         }
 

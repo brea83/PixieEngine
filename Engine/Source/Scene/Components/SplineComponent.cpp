@@ -234,11 +234,13 @@ namespace Pixie
 			Points.pop_back();
 			scene->RemoveGameObject(GameObject(PointEnttIds.back(), scene));
 			PointEnttIds.pop_back();
+			PointIDs.pop_back();
 			if (Points.size() == 1)
 			{
 				Points.pop_back();
 				scene->RemoveGameObject(GameObject(PointEnttIds.back(), scene));
 				PointEnttIds.pop_back();
+				PointIDs.pop_back();
 			}
 			return;
 		}
@@ -254,6 +256,7 @@ namespace Pixie
 				Points.pop_back();
 				scene->RemoveGameObject(GameObject(PointEnttIds.back(), scene));
 				PointEnttIds.pop_back();
+				PointIDs.pop_back();
 			}
 			return;
 		}
@@ -328,6 +331,7 @@ namespace Pixie
 		GameObject newPoint = scene->CreateEmptyGameObject(name);
 		parentSpline.AddChild(newPoint);
 
+		PointIDs.push_back(newPoint.GetGUID());
 		PointEnttIds.push_back(newPoint);
 		TransformComponent* transform = newPoint.TryGetComponent<TransformComponent>();
 		transform->SetPosition(position);

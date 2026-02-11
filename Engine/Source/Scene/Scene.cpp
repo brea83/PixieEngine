@@ -28,7 +28,33 @@ namespace Pixie
 			m_SceneState = SceneState::Play;
 		}
 
-		
+		auto view = m_Registry.view<SplineComponent>();
+
+		for (auto entity : view)
+		{
+			SplineComponent& spline = view.get<SplineComponent>(entity);
+			
+
+			if (spline.PointIDs.empty())
+				continue;
+			int numPoints = spline.PointIDs.size();
+
+			spline.Points.clear();
+			spline.Points.reserve(numPoints);
+
+			spline.PointEnttIds.clear();
+			spline.PointEnttIds.reserve(numPoints);
+
+			for (int i = 0; i < numPoints; i++)
+			{
+				uint64_t guid = spline.PointIDs[i];
+
+				GameObject point = FindGameObjectByGUID(guid);
+
+				spline.Points.push_back(point.TryGetComponent<TransformComponent>());
+				spline.PointEnttIds.push_back( point.GetEnttHandle());
+			}
+		}
 	}
 
 	void Scene::PopulateWithTestObjects()
