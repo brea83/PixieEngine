@@ -34,29 +34,34 @@ namespace Pixie
 		{
 			SplineComponent& spline = view.get<SplineComponent>(entity);
 			
-
-			if (spline.PointIDs.empty())
-				continue;
-			int numPoints = spline.PointIDs.size();
-
-			spline.Points.clear();
-			spline.Points.reserve(numPoints);
-
-			spline.PointEnttIds.clear();
-			spline.PointEnttIds.reserve(numPoints);
-
-			for (int i = 0; i < numPoints; i++)
-			{
-				uint64_t guid = spline.PointIDs[i];
-
-				GameObject point = FindGameObjectByGUID(guid);
-
-				spline.Points.push_back(point.TryGetComponent<TransformComponent>());
-				spline.PointEnttIds.push_back( point.GetEnttHandle());
-			}
+			InitializeSplineComponent(spline);
+			
 		}
 	}
 
+	void Scene::InitializeSplineComponent(SplineComponent& spline)
+	{
+		if (spline.PointIDs.empty())
+			return;
+
+		int numPoints = spline.PointIDs.size();
+
+		spline.Points.clear();
+		spline.Points.reserve(numPoints);
+
+		spline.PointEnttIds.clear();
+		spline.PointEnttIds.reserve(numPoints);
+
+		for (int i = 0; i < numPoints; i++)
+		{
+			uint64_t guid = spline.PointIDs[i];
+
+			GameObject point = FindGameObjectByGUID(guid);
+
+			spline.Points.push_back(point.TryGetComponent<TransformComponent>());
+			spline.PointEnttIds.push_back(point.GetEnttHandle());
+		}
+	}
 	void Scene::PopulateWithTestObjects()
 	{
 		GameObject mainLight = CreateEmptyGameObject("Main Light");
@@ -125,6 +130,7 @@ namespace Pixie
 		 TryCopyEntityComponent<CameraController>(destination, source);
 		 TryCopyEntityComponent<CollisionComponent>(destination, source);
 		 TryCopyEntityComponent<MovementComponent>(destination, source);
+		 TryCopyEntityComponent<SplineComponent>(destination, source);
 
 		 if (source.HasCompoenent<PlayerInputComponent>())
 		 {
@@ -202,7 +208,7 @@ namespace Pixie
 		CopyRegistryComponents<PlayerInputComponent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
 		CopyRegistryComponents<MovementComponent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
 		CopyRegistryComponents<PlayerFollowCompononent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
-
+		CopyRegistryComponents<SplineComponent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
 		return newScene;
 	}
 
@@ -395,9 +401,28 @@ namespace Pixie
 			// recursively create duplicate children
 			std::vector<GameObject> children = sourceObject.GetChildren();
 
+			SplineComponent* sourceSpline = sourceObject.TryGetComponent<SplineComponent>();
+			SplineComponent* destinationSpline = duplicate.TryGetComponent<SplineComponent>();
 			for (GameObject child : children)
 			{
 				GameObject duplicateChild = DuplicateChild(duplicate, child);
+
+				if (sourceSpline && destinationSpline)
+				{
+					auto itterator = std::find(destinationSpline->PointIDs.begin(), destinationSpline->PointIDs.end(), child.GetGUID());
+					if (itterator == destinationSpline->PointIDs.end())
+					{
+						// child not found was not a spline point
+						continue;
+					}
+					// today I learned that itterators returned by std::find are pointers to the memory location of the found object or the end of the data
+					*itterator = duplicateChild.GetGUID();
+				}
+			}
+
+			if (destinationSpline)
+			{
+				InitializeSplineComponent(*destinationSpline);
 			}
 		}
 		
