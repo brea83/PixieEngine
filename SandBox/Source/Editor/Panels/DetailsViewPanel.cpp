@@ -393,10 +393,10 @@ namespace Pixie
 
 			ImGui::Text("Type");
 			ImGui::SameLine();
-			int currentType = static_cast<int>(component.Type);
+			int currentType = static_cast<int>(component.GetType());
 			if (ImGui::Combo("##ColliderType", &currentType, SplineComponent::TypeNames, IM_ARRAYSIZE(SplineComponent::TypeNames)))
 			{
-				component.Type = static_cast<SplineType>(currentType);
+				component.SetType( static_cast<SplineType>(currentType));
 			}
 
 			ImGui::Text("Is Loop ");
@@ -411,7 +411,7 @@ namespace Pixie
 			params.Max = maxTime;
 			params.Speed = 0.01f;
 
-			DrawFloatControl("Preview T", previewTime, params);
+			DrawFloatControl("Preview T", component.PreviewTime, params);
 
 			ImGui::Text("Debug Color");
 			ImGui::SameLine();

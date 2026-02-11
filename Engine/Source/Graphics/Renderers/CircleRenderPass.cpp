@@ -153,6 +153,9 @@ namespace Pixie
 
                 splineCircle.MeshResource->Render(*m_Shader);
             }
+
+           
+
             //draw path indicators
 
             m_Shader->SetUniformFloat("LineWidth", 0.5f);
@@ -163,7 +166,11 @@ namespace Pixie
 
             while (t < spline.GetNumSegments() )
             {
-                t += 0.2;
+                t += 0.1;
+                if (glm::mod<float>(t, 1) == 0)
+                {
+                    continue;
+                }
                 glm::vec3 position = spline.GetPostionT(t);
                 glm::mat4 inverseView = inverseViewBase;
                 inverseView[3] = glm::vec4(position, 1.0f);
@@ -172,6 +179,19 @@ namespace Pixie
                 m_Shader->SetUniformMat4("Transform", modelViewMat);
                 pathCircle.MeshResource->Render(*m_Shader);
             }
+
+            
+            // render preview point
+            glm::vec3 position = spline.GetPostionT(spline.PreviewTime);
+            glm::mat4 inverseView = inverseViewBase;
+            inverseView[3] = glm::vec4(position, 1.0f);
+            glm::mat4 modelViewMat = viewMatrix * inverseView * pathScale;
+            glm::vec4 previewColor{ 1.0f, 0.75f, 0.0f, 1.0f };
+
+            m_Shader->SetUniformFloat("LineWidth", 1.0f);
+            m_Shader->SetUniformVec4("Color", previewColor);
+            m_Shader->SetUniformMat4("Transform", modelViewMat);
+            pathCircle.MeshResource->Render(*m_Shader);
 
         }
     }

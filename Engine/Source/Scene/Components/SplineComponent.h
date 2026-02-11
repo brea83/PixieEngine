@@ -27,8 +27,9 @@ namespace Pixie
         SplineComponent() = default;
         SplineComponent(SplineComponent&) = default;
 
+        SplineType GetType() const { return m_Type; }
+        void SetType(SplineType type);
         glm::vec4 DebugColor{ 0.5f, 0.5f, 1.0f, 1.0f };
-        SplineType Type{ SplineType::Linear };
         bool IsLoop{ false };
         float PreviewTime{ 0.0f };
         std::vector<TransformComponent*> Points;
@@ -58,7 +59,13 @@ namespace Pixie
             return true;
         }
 
+        static void on_construct(entt::registry& registry, const entt::entity entt);
+
     private:
+        entt::entity m_SplineEntity{};
+        SplineType m_Type{ SplineType::Linear };
+
+        void AddPoint(GameObject& parentSpline, int index = 0, glm::vec3 position = glm::vec3(0.0f), glm::vec3 rotation = glm::vec3(0.0f));
     };
 
     namespace Spline
