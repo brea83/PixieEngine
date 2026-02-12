@@ -3,6 +3,9 @@
 #include "EngineContext.h"
 #include "Scene/GameObject.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/norm.hpp>
+
 namespace Pixie
 {
 	namespace Spline
@@ -36,6 +39,7 @@ namespace Pixie
 			return glm::mix(start, end, input.SegmentT);
 		}
 
+		//TODO: add catch for negative time t trying to reach past the start of points array
 		glm::vec3 DeCasteljauPos(const SplineComponent& spline, float t)
 		{
 			SegmentRelativeT input = GetTSegmentData(t);
@@ -70,6 +74,14 @@ namespace Pixie
 				"Cardinal",
 				"Catmul-Rom",
 				"B"
+	};
+
+	const glm::mat4 SplineComponent::m_CubicBezierCharacteristic = 
+	{
+		{ 1, -3,  3, -1},
+		{ 0,  3, -6,  3},
+		{ 0,  0,  3, -3},
+		{ 0,  0,  0,  1}
 	};
 
 	void SplineComponent::on_construct(entt::registry& registry, const entt::entity entt)
@@ -324,6 +336,28 @@ namespace Pixie
 		return glm::vec3(-1.0f);
 	}
 
+	// currently brute forces it
+	glm::vec3 SplineComponent::GetClosestPosition(glm::vec3 worldSpacePos, float granularity)
+	{
+		float minDistance = FLT_MAX;
+		glm::vec3 closestPoint{ 0.0f };
+		float t = 0.0f;
+		while (t < GetNumSegments())
+		{
+			t += granularity;
+
+			glm::vec3 position = GetPostionT(t);
+			
+			float distanceSquared = glm::distance2( position , worldSpacePos);
+			if (distanceSquared < minDistance)
+			{
+				minDistance = distanceSquared;
+				closestPoint = position;
+			}
+		}
+		return closestPoint;
+	}
+
 	void SplineComponent::AddPoint( GameObject& parentSpline, int index, glm::vec3 position, glm::vec3 rotation)
 	{
 		std::shared_ptr<Scene> scene = parentSpline.GetScene();
@@ -338,6 +372,8 @@ namespace Pixie
 		transform->SetRotationEuler(rotation);
 		Points.push_back(transform);
 	}
+
+	
 
 	
 }

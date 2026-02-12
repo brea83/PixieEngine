@@ -108,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Game\ExampleGame.h" />
+    <ClInclude Include="Source\Game\SplineBehavior\SplineFollower.h" />
     <ClInclude Include="Source\Game\StateMachine\GameStates.h" />
     <ClInclude Include="Source\Editor\Panels\RenderInspectorPanel.h" />
     <ClInclude Include="Source\Editor\EditorLayer.h" />

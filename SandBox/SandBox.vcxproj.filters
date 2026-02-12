@@ -62,5 +62,8 @@
     <ClInclude Include="Source\Game\ExampleGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Game\SplineBehavior\SplineFollower.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

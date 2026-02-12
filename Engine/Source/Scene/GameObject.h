@@ -36,6 +36,7 @@ namespace Pixie
 		std::vector< GameObject> GetChildren();
 
 		virtual void OnCreate(){ }
+		virtual void OnBeginPlay();
 		virtual void OnUpdate(float deltaTime);
 		virtual void OnDestroy(){ }
 

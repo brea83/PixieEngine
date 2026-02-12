@@ -199,7 +199,9 @@ namespace Pixie
 
         glm::vec3 Offset{ 0.5f, 1.0f, 5.0f };
         GUID EntityToFollow{ 0 };
-
+        bool FollowSplineIfAvailable{ true };
+        // used for following splines
+        float AccumulatedTime{ 0.0f };
 
         static void on_construct(entt::registry& registry, const entt::entity entt);
         static void on_destroy(entt::registry& registry, const entt::entity entt);

@@ -52,6 +52,9 @@ namespace Pixie
         int GetNumSegments();
         glm::vec3 GetPostionT(float T);
 
+        //returns worldspace position closest to input worldSpacePos 
+        glm::vec3 GetClosestPosition(glm::vec3 worldSpacePos, float granularity = 0.2f);
+
         static void Serialize(StreamWriter* stream, const SplineComponent& component)
         {
             stream->WriteRaw<int>(static_cast<int>(component.m_Type));
@@ -83,6 +86,8 @@ namespace Pixie
         SplineType m_Type{ SplineType::Linear };
 
         void AddPoint(GameObject& parentSpline, int index = 0, glm::vec3 position = glm::vec3(0.0f), glm::vec3 rotation = glm::vec3(0.0f));
+        
+        static const glm::mat4 m_CubicBezierCharacteristic;
     };
 
     namespace Spline

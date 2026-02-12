@@ -19,6 +19,28 @@ namespace Pixie
 	GameObject::~GameObject()
 	{}
 
+	void GameObject::OnBeginPlay()
+	{
+		FollowComponent* follow = TryGetComponent<FollowComponent>();
+		if (!follow)
+			return;
+
+		GameObject target = m_Scene->FindGameObjectByGUID(follow->EntityToFollow);
+		if (!target)
+			return;
+
+		if (follow->FollowSplineIfAvailable && target.HasCompoenent<SplineComponent>())
+		{
+			TransformComponent& transform = GetTransform();
+			SplineComponent& spline = target.GetComponent<SplineComponent>();
+			if (spline.Points.empty())
+				return;
+			glm::vec3 startPoint = spline.Points[0]->GetWorld()[3];
+
+			transform.SetPosition(startPoint + follow->Offset);
+		}
+	}
+
 	void GameObject::OnUpdate(float deltaTime)
 	{
 		//Logger::Core(LOG_TRACE, "GameObject update, entity id: {}", (int)m_EntityHandle);
@@ -38,7 +60,19 @@ namespace Pixie
 			if (follow)
 			{
 				GameObject target = m_Scene->FindGameObjectByGUID(follow->EntityToFollow);
-				glm::vec3 targetPos = target.GetTransform().GetPosition() + follow->Offset;
+				//glm::vec3 targetPos = target.GetTransform().GetPosition() + follow->Offset;
+
+				glm::vec3 targetPos{ 0.0f };
+				if (target.HasCompoenent<SplineComponent>())
+				{
+					SplineComponent& spline = target.GetComponent<SplineComponent>();
+					follow->AccumulatedTime += deltaTime;
+					targetPos = spline.GetPostionT(follow->AccumulatedTime) + follow->Offset;
+				}
+				else
+				{
+					targetPos = target.GetTransform().GetPosition() + follow->Offset;
+				}
 
 				return targetPos - currentPosition;
 			}
@@ -90,10 +124,22 @@ namespace Pixie
 		{
 	
 			GameObject target = m_Scene->FindGameObjectByGUID(follow->EntityToFollow);
-			glm::vec3 targetPos = target.GetTransform().GetPosition() + follow->Offset;
 
-			moveComponent.Direction = glm::normalize(targetPos - GetTransform().GetPosition());
-			return moveComponent.Speed * deltaTime * moveComponent.Direction;
+			glm::vec3 targetPos{ 0.0f };
+			if (target.HasCompoenent<SplineComponent>())
+			{
+				follow->AccumulatedTime += deltaTime *moveComponent.Speed;
+				SplineComponent& spline = target.GetComponent<SplineComponent>();
+				targetPos = spline.GetPostionT(follow->AccumulatedTime) + follow->Offset;
+				return targetPos - currentPosition;
+			}
+			else
+			{
+				targetPos = target.GetTransform().GetPosition() + follow->Offset;
+				moveComponent.Direction = glm::normalize(targetPos - GetTransform().GetPosition());
+				return moveComponent.Speed * deltaTime * moveComponent.Direction;
+			}
+
 		}
 		return glm::vec3(0.0f);
 	}

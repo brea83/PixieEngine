@@ -233,7 +233,11 @@ namespace Pixie
 		m_SceneState = SceneState::Play;
 		m_CameraManager.OnBeginPlayMode();
 
-		
+		for (auto&& [entity, component] : m_Registry.view<HasUpdateableComponents>().each())
+		{
+			GameObject gameObject(entity, shared_from_this());
+			gameObject.OnBeginPlay();
+		}
 	}
 
 	void  Scene::EndPlayMode()
