@@ -191,18 +191,33 @@ namespace Pixie
         }
     };
 
-    struct PlayerFollowCompononent
+    //  todo: scene serializeation/ saving for follow component and orbit component
+    struct FollowComponent
     {
-        PlayerFollowCompononent() = default;
-        PlayerFollowCompononent(const PlayerFollowCompononent&) = default;
+        FollowComponent() = default;
+        FollowComponent(const FollowComponent&) = default;
 
         glm::vec3 Offset{ 0.5f, 1.0f, 5.0f };
+        GUID EntityToFollow{ 0 };
 
-        void OnUpdate(float deltaTime);
 
         static void on_construct(entt::registry& registry, const entt::entity entt);
         static void on_destroy(entt::registry& registry, const entt::entity entt);
+
+        static void Serialize(StreamWriter* stream, const FollowComponent& component)
+        {
+            stream->WriteRaw<glm::vec3>(component.Offset);
+            stream->WriteObject<GUID>(component.EntityToFollow);
+        }
+        static bool Deserialize(StreamReader* stream, FollowComponent& component)
+        {
+            stream->ReadRaw<glm::vec3>(component.Offset);
+            stream->ReadObject<GUID>(component.EntityToFollow);
+            return true;
+        }
     };
+
+    
 
     struct MovementComponent
     {
@@ -234,6 +249,8 @@ namespace Pixie
 
         glm::vec3 Origin{ 0.0f };
         float Radius{ 1.0f };
+        //in radians
+        float AccumulatedAngle{ 0.0f };
         //MovementComponent* MovementComponent{ nullptr };
 
         static void on_construct(entt::registry& registry, const entt::entity entt);

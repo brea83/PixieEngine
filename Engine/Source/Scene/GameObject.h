@@ -53,8 +53,12 @@ namespace Pixie
 		static bool Deserialize(StreamReader* fileReader, GameObject& object);
 	protected:
 		//entt::entity m_SerializedID{ entt::null };
-
-		virtual void Move(float deltaTime);
+		
+		//very basic movement called on update, and does not include turning. override for game or entity specific behavior.
+		virtual bool Move(float deltaTime);
+		// basic handling of object movment from the following components MovementComponent, FollowComponent, and Orbit Component
+		// Returns the next desired position as an offset from current position intended to be added.
+		virtual glm::vec3 HandleMovementComponents(float deltaTime);
 	private:
 		friend class Scene;
 	};

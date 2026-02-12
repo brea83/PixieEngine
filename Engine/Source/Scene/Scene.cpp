@@ -119,6 +119,7 @@ namespace Pixie
 		 return nullptr;
 	 }
 
+	 // this is single entity copying in the same scene
 	 static void TryCopyAllComponents(Entity destination, Entity source)
 	 {
 		 
@@ -131,6 +132,8 @@ namespace Pixie
 		 TryCopyEntityComponent<CollisionComponent>(destination, source);
 		 TryCopyEntityComponent<MovementComponent>(destination, source);
 		 TryCopyEntityComponent<SplineComponent>(destination, source);
+		 TryCopyEntityComponent<FollowComponent>(destination, source);
+		 TryCopyEntityComponent<OrbitComponent>(destination, source);
 
 		 if (source.HasCompoenent<PlayerInputComponent>())
 		 {
@@ -207,8 +210,11 @@ namespace Pixie
 		CopyRegistryComponents<CubeCollider>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
 		CopyRegistryComponents<PlayerInputComponent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
 		CopyRegistryComponents<MovementComponent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
-		CopyRegistryComponents<PlayerFollowCompononent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
+		CopyRegistryComponents<FollowComponent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
 		CopyRegistryComponents<SplineComponent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
+		CopyRegistryComponents<FollowComponent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
+		CopyRegistryComponents<OrbitComponent>(destinationRegistry, sourceRegistry, guidToDestinationEntt);
+
 		return newScene;
 	}
 

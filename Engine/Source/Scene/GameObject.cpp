@@ -26,28 +26,89 @@ namespace Pixie
 		Move(deltaTime);
 	}
 
-	void GameObject::Move(float deltaTime)
+	glm::vec3 GameObject::HandleMovementComponents(float deltaTime)
 	{
-		MovementComponent* moveComponent = TryGetComponent<MovementComponent>();
-		if (moveComponent == nullptr) 
-			return;
-
-		if (moveComponent->Direction == glm::vec3(0.0f))
-			return;
-
+		FollowComponent* follow = TryGetComponent<FollowComponent>();
+		OrbitComponent* orbit = TryGetComponent<OrbitComponent>();
 		TransformComponent& transform = GetTransform();
+		glm::vec3 currentPosition = transform.GetPosition();
 
-			glm::vec3 direction = glm::normalize(moveComponent->Direction);
-			float velocity = moveComponent->Speed * deltaTime; // adjust accordingly
+		if (!HasCompoenent<MovementComponent>())
+		{
+			if (follow)
+			{
+				GameObject target = m_Scene->FindGameObjectByGUID(follow->EntityToFollow);
+				glm::vec3 targetPos = target.GetTransform().GetPosition() + follow->Offset;
+
+				return targetPos - currentPosition;
+			}
+			else
+				return glm::vec3(0.0f);
+		}
+
+		MovementComponent& moveComponent = GetComponent<MovementComponent>();
+		// check if has player input active
+		PlayerInputComponent* input = TryGetComponent<PlayerInputComponent>();
+		if (input && input->BIsActive)
+		{
+			if (follow || orbit)
+				Logger::Core(LOG_WARNING, "entity, {}, has an active player input component. using player input component. movement is being generated based on input, if npc movement type components are desired remove or deactivate the input component.", GetName());
+			
+			if (moveComponent.Direction == glm::vec3(0.0f))
+				return moveComponent.Direction;
+
+			glm::vec3 direction = glm::normalize(moveComponent.Direction);
+			float velocity = moveComponent.Speed * deltaTime; // adjust accordingly
 
 			glm::vec3 forward = transform.Forward() * direction.z;
 			glm::vec3 right = transform.Right() * direction.x;
 			glm::vec3 up = transform.Up() * direction.y;
 
-			glm::vec3 currentPosition = transform.GetPosition();
+			return  (velocity * (forward + right + up));
+		}
+		 else if (follow && orbit)
+		{
+			Logger::Core(LOG_WARNING, "Entity, {}, has both follow component and orbit component, using the transform of follow entity as origin for orbit", GetName());
+			GameObject target = m_Scene->FindGameObjectByGUID(follow->EntityToFollow);
+			glm::vec3 targetPos = target.GetTransform().GetPosition();
 
-			transform.SetPosition(currentPosition + (velocity * (forward + right + up)));
+			orbit->AccumulatedAngle += deltaTime * moveComponent.Speed;
+			glm::vec3 newPosition = targetPos;
+			newPosition.x += orbit->Radius * glm::cos(orbit->AccumulatedAngle);
+			newPosition.y += orbit->Radius * glm::sin(orbit->AccumulatedAngle);
+			return newPosition - currentPosition;
+		}
+		else if (orbit)
+		{
+			orbit->AccumulatedAngle += deltaTime * moveComponent.Speed;
+			glm::vec3 newPosition = orbit->Origin;
+			newPosition.x += orbit->Radius * glm::cos(orbit->AccumulatedAngle);
+			newPosition.y += orbit->Radius * glm::sin(orbit->AccumulatedAngle);
+			return newPosition - currentPosition;
+		}
+		else if (follow)
+		{
 	
+			GameObject target = m_Scene->FindGameObjectByGUID(follow->EntityToFollow);
+			glm::vec3 targetPos = target.GetTransform().GetPosition() + follow->Offset;
+
+			moveComponent.Direction = glm::normalize(targetPos - GetTransform().GetPosition());
+			return moveComponent.Speed * deltaTime * moveComponent.Direction;
+		}
+		return glm::vec3(0.0f);
+	}
+
+	bool GameObject::Move(float deltaTime)
+	{
+		glm::vec3 movement = HandleMovementComponents(deltaTime);
+		if (movement == glm::vec3(0.0f))
+		{
+			return false;
+		}
+
+		TransformComponent& transform = GetTransform();
+		transform.SetPosition(transform.GetPosition() + movement);
+		return true;
 	}
 
 	void GameObject::Serialize(StreamWriter* fileWriter, const GameObject& object)

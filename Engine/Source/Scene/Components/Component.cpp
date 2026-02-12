@@ -1,5 +1,8 @@
 #include "BsPrecompileHeader.h"
 #include "Component.h"
+#include "EngineContext.h"
+#include "Scene/Scene.h"
+#include "Scene/GameObject.h"
 
 
 //Component::Component(/*GameObject* parent, const std::string& name*/)
@@ -13,22 +16,18 @@ namespace Pixie
                 "Spot Light"
     };
 
-    //player follow component
-    void PlayerFollowCompononent::OnUpdate(float deltaTime)
-    {
+    // follow component
 
-    }
-
-    void PlayerFollowCompononent::on_construct(entt::registry& registry, const entt::entity entt)
+    void FollowComponent::on_construct(entt::registry& registry, const entt::entity entt)
     {
-        HasUpdateableComponents* component = registry.try_get<HasUpdateableComponents>(entt);
-        if (component)
+        HasUpdateableComponents* updateableComponent = registry.try_get<HasUpdateableComponents>(entt);
+        if (updateableComponent)
             return;
 
         registry.emplace<HasUpdateableComponents>(entt);
     }
 
-    void PlayerFollowCompononent::on_destroy(entt::registry & registry, const entt::entity entt)
+    void FollowComponent::on_destroy(entt::registry & registry, const entt::entity entt)
     {
         //check for other updatable components, if none remove the tag.
         MovementComponent* component = registry.try_get<MovementComponent>(entt);
@@ -52,7 +51,7 @@ namespace Pixie
     void MovementComponent::on_destroy(entt::registry & registry, const entt::entity entt)
     {
         //check for other updatable components, if none remove the tag.
-        PlayerFollowCompononent* component = registry.try_get<PlayerFollowCompononent>(entt);
+        FollowComponent* component = registry.try_get<FollowComponent>(entt);
         if (component)
             return;
 

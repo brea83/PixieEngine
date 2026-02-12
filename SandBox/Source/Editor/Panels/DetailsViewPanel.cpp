@@ -43,6 +43,13 @@ namespace Pixie
 					selected->AddComponent<MeshComponent>();
 				}
 
+				if (ImGui::Selectable("Circle Renderer"))
+				{
+					selected->AddComponent<CircleRendererComponent>();
+				}
+
+				ImGui::Separator();
+
 				if (ImGui::Selectable("Camera Component"))
 				{
 					selected->AddComponent<CameraComponent>();
@@ -54,15 +61,17 @@ namespace Pixie
 					selected->AddComponent<LightComponent>();
 				}
 
-				if (ImGui::Selectable("Circle Renderer"))
-				{
-					selected->AddComponent<CircleRendererComponent>();
-				}
-
 				if (ImGui::Selectable("Collision component"))
 				{
 					selected->AddComponent<CollisionComponent>();
 				}
+
+				if (ImGui::Selectable("Spline component"))
+				{
+					selected->AddComponent<SplineComponent>();
+				}
+
+				ImGui::Separator();
 
 				if (ImGui::Selectable("Player Input component"))
 				{
@@ -74,10 +83,16 @@ namespace Pixie
 					selected->AddComponent<MovementComponent>();
 				}
 
-				if (ImGui::Selectable("Spline component"))
+				if (ImGui::Selectable("FollowComponent"))
 				{
-					selected->AddComponent<SplineComponent>();
+					selected->AddComponent<FollowComponent>();
 				}
+
+				if (ImGui::Selectable("Orbit Component"))
+				{
+					selected->AddComponent<OrbitComponent>();
+				}
+
 				ImGui::EndPopup();
 			}
 			if (ImGui::Button("AddComponent"))
@@ -507,6 +522,106 @@ namespace Pixie
 			if (removeComponent)
 			{
 				selected.RemoveComponent<MovementComponent>();
+			}
+		}
+
+		if (selected.HasCompoenent<FollowComponent>())
+		{
+			ImGui::PushID("FollowerComponent");
+			ImGui::Separator();
+			FollowComponent& component = selected.GetComponent<FollowComponent>();
+			ImGui::Text("Follower Component");
+			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 25.0f);
+
+			ImVec2 buttonSize{ ImGui::CalcTextSize("X").x + (ImGui::GetStyle().FramePadding.x * 2.0f),
+			ImGui::CalcTextSize("X").y + (ImGui::GetStyle().FramePadding.y * 2.0f) };
+
+			bool removeComponent{ false };
+			if (ImGui::Button("X", buttonSize))
+			{
+				removeComponent = true;
+			}
+
+			ImGui::Separator();
+
+			SliderParams params;
+			params.Speed = 0.001f;
+			params.ResetValue = 0.0f;
+			DrawVec3Control("Offset", component.Offset, params);
+
+			GameObject target = scene->FindGameObjectByGUID(component.EntityToFollow);
+			std::string targetString = target ? target.GetName() : "";
+
+			ImGui::BeginDisabled();
+			DrawStringProperty("Target Object", targetString, targetString);
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HEIRARCHY_ITEM"))
+				{
+					IM_ASSERT(payload->DataSize == sizeof(GameObject));
+					GameObject droppedObject = *(const GameObject*)payload->Data;
+
+					component.EntityToFollow = droppedObject.GetGUID();
+				}
+				ImGui::EndDragDropTarget();
+			}
+			
+			ImGui::EndDisabled();
+
+			ImGui::PopID();
+
+			if (removeComponent)
+			{
+				selected.RemoveComponent<FollowComponent>();
+			}
+		}
+
+		if (selected.HasCompoenent<OrbitComponent>())
+		{
+			ImGui::PushID("OrbitComponent");
+			ImGui::Separator();
+			OrbitComponent& component = selected.GetComponent<OrbitComponent>();
+			ImGui::Text("Orbit Component");
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("Currently only stores data about an orbit, move component is used to move along an orbit");
+			}
+			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 25.0f);
+
+			ImVec2 buttonSize{ ImGui::CalcTextSize("X").x + (ImGui::GetStyle().FramePadding.x * 2.0f),
+			ImGui::CalcTextSize("X").y + (ImGui::GetStyle().FramePadding.y * 2.0f) };
+
+			bool removeComponent{ false };
+			if (ImGui::Button("X", buttonSize))
+			{
+				removeComponent = true;
+			}
+
+			ImGui::Separator();
+
+			SliderParams params;
+			params.Speed = 0.001f;
+			params.ResetValue = 0.0f;
+			DrawVec3Control("Orbital Center", component.Origin, params);
+			if (!selected.HasCompoenent<FollowComponent>() && ImGui::BeginDragDropTarget())
+			{
+				//seems handy to drag and drop origins based on other objects even when not explicitly following those objects
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HEIRARCHY_ITEM"))
+				{
+					IM_ASSERT(payload->DataSize == sizeof(GameObject));
+					GameObject droppedObject = *(const GameObject*)payload->Data;
+
+					component.Origin = droppedObject.GetTransform().GetPosition();
+				}
+				ImGui::EndDragDropTarget();
+			}
+			DrawFloatControl("Radius", component.Radius, params);
+
+			ImGui::PopID();
+
+			if (removeComponent)
+			{
+				selected.RemoveComponent<OrbitComponent>();
 			}
 		}
 

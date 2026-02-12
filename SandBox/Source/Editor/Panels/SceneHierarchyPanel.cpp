@@ -167,13 +167,16 @@ namespace Pixie
 			ImGui::Text(name.c_str());
 			ImGui::EndDragDropSource();
 		}
+
 		DropItemAsChild(entity);
 		
-
-		if (ImGui::IsItemClicked())
+		if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(0)
+			&& ImGui::GetMouseDragDelta(0).x == 0.0f && ImGui::GetMouseDragDelta(0).y == 0.0f)
 		{
 			m_Selected = std::make_shared<GameObject>(entity);
 		}
+
+		
 
 		bool entityDeleted = false;
 		if (ImGui::BeginPopupContextItem())
