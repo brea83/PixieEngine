@@ -52,6 +52,11 @@ namespace Pixie
 				return spline.Points[spline.Points.size() - 1]->GetObjectToWorldMatrix()[3];
 			}
 
+			if (startIndex < 0 && !spline.IsLoop)
+			{
+				return spline.Points[0]->GetObjectToWorldMatrix()[3];
+			}
+
 			glm::vec3 pointA = spline.Points[startIndex + 0]->GetObjectToWorldMatrix()[3];
 			glm::vec3 pointB = spline.Points[startIndex + 1]->GetObjectToWorldMatrix()[3]; // controll point
 			glm::vec3 pointC = spline.Points[startIndex + 2]->GetObjectToWorldMatrix()[3]; // controll point
