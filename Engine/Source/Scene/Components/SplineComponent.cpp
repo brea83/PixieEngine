@@ -10,11 +10,11 @@ namespace Pixie
 {
 	namespace Spline
 	{
-		SegmentRelativeT GetTSegmentData(float t)
+		SegmentRelativeT GetTSegmentData(float t, int numSegments)
 		{
 			SegmentRelativeT data;
 
-			data.Segment = glm::floor(t);
+			data.Segment = glm::min<int>(glm::floor(t), numSegments);
 			data.SegmentT = t - data.Segment;
 
 			return data;
@@ -22,7 +22,7 @@ namespace Pixie
 
 		glm::vec3 LinearPos(const SplineComponent& spline, float t)
 		{
-			SegmentRelativeT input = GetTSegmentData(t);
+			SegmentRelativeT input = GetTSegmentData(t, spline.GetNumSegments());
 			// glm::mix = (1 - t)pointA + (t * pointB)
 
 			//linear splines share end points so start at indexes 0, and mult of 2
@@ -45,7 +45,7 @@ namespace Pixie
 
 		glm::vec3 DeCasteljauPos(const SplineComponent& spline, float t)
 		{
-			SegmentRelativeT input = GetTSegmentData(t);
+			SegmentRelativeT input = GetTSegmentData(t, spline.GetNumSegments());
 
 			//cubic beziers share their last point so each segment sould start on a mult of 3 or on 0
 			int startIndex = input.Segment * 3; 
@@ -296,7 +296,7 @@ namespace Pixie
 		return glm::vec3();
 	}
 
-	int SplineComponent::GetNumSegments()
+	int SplineComponent::GetNumSegments() const
 	{
 		if (Points.size() <= 0)
 			return 0;

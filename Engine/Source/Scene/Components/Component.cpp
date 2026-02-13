@@ -46,11 +46,50 @@ namespace Pixie
     // Todo: get other end behaviors implemented
     glm::vec3 FollowComponent::HandleSplineFollowing(float deltaTime, SplineComponent& spline, MovementComponent& moveComponent, glm::vec3 currentPosition)
     {
-        AccumulatedTime += deltaTime * moveComponent.Speed;
+        if (FollowDirection == 0)
+            return glm::vec3(0.0f);
+
+        AccumulatedTime += deltaTime * moveComponent.Speed * FollowDirection;
 
         glm::vec3 splineAtT = spline.GetPostionT(AccumulatedTime);
-        glm::vec3 targetPos = splineAtT + Offset;
-        return targetPos - currentPosition;
+
+        glm::bvec3 equality = glm::equal(splineAtT, glm::vec3(spline.Points.back()->GetWorld()[3]));
+        bool bIsEndOfSpline = equality.x && equality.y && equality.z;
+
+        if (!bIsEndOfSpline)
+        {
+            glm::vec3 targetPos = splineAtT + Offset;
+            return targetPos - currentPosition;
+        }
+
+        switch (FollowType)
+        {
+        case Pixie::SplineEndBehavior::Stop:
+        {
+            FollowDirection = 0;
+            AccumulatedTime = 0.0f;
+            break;
+        }
+        case Pixie::SplineEndBehavior::PingPong:
+        {
+            FollowDirection *= -1;
+            //AccumulatedTime = 0.0f;
+            break;
+        }
+        case Pixie::SplineEndBehavior::TeleportToStart:
+        {
+            FollowDirection = 1;
+            AccumulatedTime = 0.0f;
+            break;
+        }
+        default:
+        {
+            FollowDirection = 0;
+            AccumulatedTime = 0.0f;
+            break;
+        }
+        }
+        return glm::vec3(0.0f);
     }
 
     void FollowComponent::on_construct(entt::registry& registry, const entt::entity entt)

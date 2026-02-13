@@ -122,8 +122,8 @@ namespace Pixie
 		}
 		else if (follow)
 		{
-	
-			GameObject target = m_Scene->FindGameObjectByGUID(follow->EntityToFollow);
+			return follow->HandleFollowing(deltaTime, m_Scene, moveComponent, currentPosition);
+			/*GameObject target = m_Scene->FindGameObjectByGUID(follow->EntityToFollow);
 			if (!target)
 				return glm::vec3(0.0f);
 
@@ -141,7 +141,7 @@ namespace Pixie
 				targetPos = target.GetTransform().GetPosition() + follow->Offset;
 				moveComponent.Direction = glm::normalize(targetPos - GetTransform().GetPosition());
 				return moveComponent.Speed * deltaTime * moveComponent.Direction;
-			}
+			}*/
 
 		}
 		return glm::vec3(0.0f);

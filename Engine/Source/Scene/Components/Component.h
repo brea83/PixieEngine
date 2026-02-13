@@ -193,6 +193,30 @@ namespace Pixie
         }
     };
 
+
+    struct MovementComponent
+    {
+        MovementComponent() = default;
+        MovementComponent(const MovementComponent&) = default;
+
+        float Speed{ 1.0f };
+        glm::vec3 Direction{ 0.0f };
+
+        static void on_construct(entt::registry& registry, const entt::entity entt);
+        static void on_destroy(entt::registry& registry, const entt::entity entt);
+
+        static void Serialize(StreamWriter* stream, const MovementComponent& component)
+        {
+            stream->WriteRaw<float>(component.Speed);
+        }
+        static bool Deserialize(StreamReader* stream, MovementComponent& component)
+        {
+            stream->ReadRaw<float>(component.Speed);
+            component.Direction = glm::vec3(0.0f);
+            return true;
+        }
+    };
+
     //  todo: scene serializeation/ saving for follow component and orbit component
     enum class SplineEndBehavior
     {
@@ -214,6 +238,7 @@ namespace Pixie
         // used for following splines
         float AccumulatedTime{ 0.0f };
         SplineEndBehavior FollowType{ SplineEndBehavior::Stop };
+        int FollowDirection{ 1 };
 
         glm::vec3 HandleFollowing(float deltaTime, std::shared_ptr<Scene> scene, MovementComponent& moveComponent, glm::vec3 currentPosition);
         glm::vec3 HandleSplineFollowing(float deltaTime, SplineComponent& spline, MovementComponent& moveComponent, glm::vec3 currentPosition);
@@ -240,30 +265,6 @@ namespace Pixie
         }
     };
 
-    
-
-    struct MovementComponent
-    {
-        MovementComponent() = default;
-        MovementComponent(const MovementComponent&) = default;
-
-        float Speed{ 1.0f };
-        glm::vec3 Direction{ 0.0f };
-
-        static void on_construct(entt::registry& registry, const entt::entity entt);
-        static void on_destroy(entt::registry& registry, const entt::entity entt);
-
-        static void Serialize(StreamWriter* stream, const MovementComponent& component)
-        {
-            stream->WriteRaw<float>(component.Speed);
-        }
-        static bool Deserialize(StreamReader* stream, MovementComponent& component)
-        {
-            stream->ReadRaw<float>(component.Speed);
-            component.Direction = glm::vec3(0.0f);
-            return true;
-        }
-    };
 
     struct OrbitComponent
     {

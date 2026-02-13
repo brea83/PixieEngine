@@ -49,7 +49,7 @@ namespace Pixie
         void AddSegment(GameObject& splineObject);
         void RemoveSegment(GameObject& splineObject);
         glm::vec3 GetTangent(float T);
-        int GetNumSegments();
+        int GetNumSegments() const;
         glm::vec3 GetPostionT(float T);
 
         //returns worldspace position closest to input worldSpacePos 
@@ -92,7 +92,7 @@ namespace Pixie
 
     namespace Spline
     {
-        static SegmentRelativeT GetTSegmentData(float t);
+        static SegmentRelativeT GetTSegmentData(float t, int numSegments);
         //linearly interpolate postision along linear spline at time t
         static glm::vec3 LinearPos(const SplineComponent& spline, float t);
 
