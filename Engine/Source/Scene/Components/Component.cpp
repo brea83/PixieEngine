@@ -53,8 +53,11 @@ namespace Pixie
 
         glm::vec3 splineAtT = spline.GetPostionT(AccumulatedTime);
 
-        glm::bvec3 equality = glm::equal(splineAtT, glm::vec3(spline.Points.back()->GetWorld()[3]));
+        bool bStartIsEnd = FollowType == SplineEndBehavior::PingPong && FollowDirection < 0;
+        glm::vec3 endPoint = bStartIsEnd ? glm::vec3(spline.Points.front()->GetWorld()[3]) : glm::vec3(spline.Points.back()->GetWorld()[3]);
+        glm::bvec3 equality = glm::equal(splineAtT, endPoint);
         bool bIsEndOfSpline = equality.x && equality.y && equality.z;
+        
 
         if (!bIsEndOfSpline)
         {
