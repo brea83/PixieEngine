@@ -24,6 +24,35 @@ namespace Pixie
         "Teleport To Start",
     };
 
+    glm::vec3 FollowComponent::HandleFollowing(float deltaTime, std::shared_ptr<Scene> scene, MovementComponent& moveComponent, glm::vec3 currentPosition)
+    {
+        GameObject target = scene->FindGameObjectByGUID(EntityToFollow);
+        if (!target)
+            return glm::vec3(0.0f);
+
+        if (target.HasCompoenent<SplineComponent>() && FollowSplineIfAvailable)
+        {
+            SplineComponent& spline = target.GetComponent<SplineComponent>();
+            return HandleSplineFollowing(deltaTime, spline, moveComponent, currentPosition);
+        }
+        else
+        {
+            glm::vec3 targetPos = target.GetTransform().GetPosition() + Offset;
+            moveComponent.Direction = glm::normalize(targetPos - currentPosition);
+            return moveComponent.Speed * deltaTime * moveComponent.Direction;
+        }
+    }
+
+    // Todo: get other end behaviors implemented
+    glm::vec3 FollowComponent::HandleSplineFollowing(float deltaTime, SplineComponent& spline, MovementComponent& moveComponent, glm::vec3 currentPosition)
+    {
+        AccumulatedTime += deltaTime * moveComponent.Speed;
+
+        glm::vec3 splineAtT = spline.GetPostionT(AccumulatedTime);
+        glm::vec3 targetPos = splineAtT + Offset;
+        return targetPos - currentPosition;
+    }
+
     void FollowComponent::on_construct(entt::registry& registry, const entt::entity entt)
     {
         HasUpdateableComponents* updateableComponent = registry.try_get<HasUpdateableComponents>(entt);

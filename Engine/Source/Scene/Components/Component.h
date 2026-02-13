@@ -202,6 +202,7 @@ namespace Pixie
         END
     };
 
+    class Scene;
     struct FollowComponent
     {
         FollowComponent() = default;
@@ -213,6 +214,9 @@ namespace Pixie
         // used for following splines
         float AccumulatedTime{ 0.0f };
         SplineEndBehavior FollowType{ SplineEndBehavior::Stop };
+
+        glm::vec3 HandleFollowing(float deltaTime, std::shared_ptr<Scene> scene, MovementComponent& moveComponent, glm::vec3 currentPosition);
+        glm::vec3 HandleSplineFollowing(float deltaTime, SplineComponent& spline, MovementComponent& moveComponent, glm::vec3 currentPosition);
 
         static const char* TypeNames[(unsigned long long)SplineEndBehavior::END];
 
