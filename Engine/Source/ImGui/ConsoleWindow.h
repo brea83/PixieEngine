@@ -59,6 +59,7 @@ namespace Pixie
         std::vector<std::pair<std::string_view, bool>> m_SandboxLogLevel{ {"Trace", true}, {"Info", true}, {"Debug", true}, {"Warning", true}, {"Error", true}, {"Critical", true} };
 
         float m_WrapWidth{ 200.0f };
+        int m_FontSize{ 15 };
 
         std::string m_TimeFormat{"%Y-%m-%d %H:%M:%S"};
 

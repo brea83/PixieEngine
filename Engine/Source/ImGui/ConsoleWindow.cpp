@@ -178,7 +178,19 @@ namespace Pixie
             }
 
             ImGui::SameLine();
-            m_DisplayFilter.Draw("Filter", -100.0F);
+            ImGui::Text("Search");
+            ImGui::SameLine();
+            m_DisplayFilter.Draw("##SearchFilter", 150.0F);
+
+            ImGui::SameLine();
+            ImGui::Text("Font Size");
+            ImGui::SameLine();
+            ImGui::PushItemWidth(75.0f);
+            if (ImGui::InputInt("##FontSize", &m_FontSize))
+            {
+                m_FontSize = std::max(m_FontSize, 2);
+            }
+            ImGui::PopItemWidth();
         }
         // Restore the button color
         ImGui::PopStyleColor();
@@ -192,7 +204,7 @@ namespace Pixie
         ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 1));
-        ImGui::PushFont(NULL, 20.0f);
+        ImGui::PushFont(NULL, m_FontSize);
 
         std::shared_lock<std::shared_timed_mutex> lock(m_LogHistory_mutex);
         for (auto const& log : m_LogHistory)
