@@ -552,8 +552,9 @@ namespace Pixie
 			GameObject target = scene->FindGameObjectByGUID(component.EntityToFollow);
 			std::string targetString = target ? target.GetName() : "";
 
+			ImGui::SeparatorText("Target to Follow");
 			ImGui::BeginDisabled();
-			DrawStringProperty("Target Object", targetString, targetString);
+			DrawStringProperty("##Target", targetString, targetString);
 			if (ImGui::BeginDragDropTarget())
 			{
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HEIRARCHY_ITEM"))
@@ -565,8 +566,23 @@ namespace Pixie
 				}
 				ImGui::EndDragDropTarget();
 			}
-			
 			ImGui::EndDisabled();
+			ImGui::Separator();
+
+			ImGui::Checkbox("Follow Spline if Available", &component.FollowSplineIfAvailable);
+
+			if (component.FollowSplineIfAvailable)
+			{
+				ImGui::Text("End Of Spline Behavior");
+				ImGui::SameLine();
+				int currentType = static_cast<int>(component.FollowType);
+
+				if (ImGui::Combo("##ColliderType", &currentType, FollowComponent::TypeNames, IM_ARRAYSIZE(FollowComponent::TypeNames)))
+				{
+					component.FollowType = static_cast<SplineEndBehavior>(currentType);
+				}
+			}
+
 
 			ImGui::PopID();
 

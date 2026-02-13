@@ -18,6 +18,12 @@ namespace Pixie
 
     // follow component
 
+    const char* FollowComponent::TypeNames[(unsigned long long)SplineEndBehavior::END] = {
+        "Stop",
+        "Ping-Pong",
+        "Teleport To Start",
+    };
+
     void FollowComponent::on_construct(entt::registry& registry, const entt::entity entt)
     {
         HasUpdateableComponents* updateableComponent = registry.try_get<HasUpdateableComponents>(entt);

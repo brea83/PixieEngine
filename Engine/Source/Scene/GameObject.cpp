@@ -186,6 +186,8 @@ namespace Pixie
 		PlayerInputComponent* inputComponent = object.TryGetComponent<PlayerInputComponent>();
 		MovementComponent* movement = object.TryGetComponent<MovementComponent>();
 		SplineComponent* spline = object.TryGetComponent<SplineComponent>();
+		FollowComponent* follow = object.TryGetComponent<FollowComponent>();
+		OrbitComponent* orbit = object.TryGetComponent<OrbitComponent>();
 
 		std::vector<SerializableComponentID> components;
 		if (tag) components.push_back(SerializableComponentID::TagComponent);
@@ -201,6 +203,8 @@ namespace Pixie
 		if (inputComponent) components.push_back(SerializableComponentID::PlayerInput);
 		if (movement) components.push_back(SerializableComponentID::MovementComponent);
 		if (spline) components.push_back(SerializableComponentID::SplineComponent);
+		if (follow) components.push_back(SerializableComponentID::FollowComponent);
+		if (orbit) components.push_back(SerializableComponentID::OrbitComponent);
 
 		fileWriter->WriteArray<SerializableComponentID>(components);
 
@@ -276,6 +280,12 @@ namespace Pixie
 
 			if (id == SerializableComponentID::SplineComponent)
 				fileWriter->WriteObject(object.GetComponent<SplineComponent>());
+
+			if (id == SerializableComponentID::FollowComponent)
+				fileWriter->WriteObject(object.GetComponent<FollowComponent>());
+
+			if (id == SerializableComponentID::OrbitComponent)
+				fileWriter->WriteObject(object.GetComponent<OrbitComponent>());
 
 		}
 
@@ -412,7 +422,21 @@ namespace Pixie
 				continue;
 			}
 
-			
+			if (id == SerializableComponentID::FollowComponent)
+			{
+				FollowComponent& component = object.GetOrAddComponent<FollowComponent>();
+
+				fileReader->ReadObject(component);
+				continue;
+			}
+
+			if (id == SerializableComponentID::OrbitComponent)
+			{
+				OrbitComponent& component = object.GetOrAddComponent<OrbitComponent>();
+
+				fileReader->ReadObject(component);
+				continue;
+			}
 		}
 
 		return true;

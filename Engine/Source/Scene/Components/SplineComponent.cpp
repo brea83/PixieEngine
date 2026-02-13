@@ -33,13 +33,16 @@ namespace Pixie
 				return glm::vec3(spline.Points[spline.Points.size() - 1]->GetObjectToWorldMatrix()[3]);
 			}
 
+			if (startIndex < 0 && !spline.IsLoop)
+			{
+				return spline.Points[0]->GetObjectToWorldMatrix()[3];
+			}
 			
 			glm::vec3 start = spline.Points[startIndex]->GetObjectToWorldMatrix()[3];
 			glm::vec3  end = spline.Points[startIndex + 1]->GetObjectToWorldMatrix()[3];
 			return glm::mix(start, end, input.SegmentT);
 		}
 
-		//TODO: add catch for negative time t trying to reach past the start of points array
 		glm::vec3 DeCasteljauPos(const SplineComponent& spline, float t)
 		{
 			SegmentRelativeT input = GetTSegmentData(t);

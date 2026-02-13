@@ -33,6 +33,8 @@ namespace Pixie
         PlayerInput,
         MovementComponent,
         SplineComponent,
+        FollowComponent,
+        OrbitComponent
     };
 
     struct IDComponent
@@ -192,6 +194,14 @@ namespace Pixie
     };
 
     //  todo: scene serializeation/ saving for follow component and orbit component
+    enum class SplineEndBehavior
+    {
+        Stop,
+        PingPong,
+        TeleportToStart,
+        END
+    };
+
     struct FollowComponent
     {
         FollowComponent() = default;
@@ -202,6 +212,9 @@ namespace Pixie
         bool FollowSplineIfAvailable{ true };
         // used for following splines
         float AccumulatedTime{ 0.0f };
+        SplineEndBehavior FollowType{ SplineEndBehavior::Stop };
+
+        static const char* TypeNames[(unsigned long long)SplineEndBehavior::END];
 
         static void on_construct(entt::registry& registry, const entt::entity entt);
         static void on_destroy(entt::registry& registry, const entt::entity entt);
@@ -210,11 +223,15 @@ namespace Pixie
         {
             stream->WriteRaw<glm::vec3>(component.Offset);
             stream->WriteObject<GUID>(component.EntityToFollow);
+            stream->WriteRaw(component.FollowSplineIfAvailable);
+            stream->WriteRaw<SplineEndBehavior>(component.FollowType);
         }
         static bool Deserialize(StreamReader* stream, FollowComponent& component)
         {
             stream->ReadRaw<glm::vec3>(component.Offset);
             stream->ReadObject<GUID>(component.EntityToFollow);
+            stream->ReadRaw(component.FollowSplineIfAvailable);
+            stream->ReadRaw<SplineEndBehavior>(component.FollowType);
             return true;
         }
     };
@@ -253,7 +270,6 @@ namespace Pixie
         float Radius{ 1.0f };
         //in radians
         float AccumulatedAngle{ 0.0f };
-        //MovementComponent* MovementComponent{ nullptr };
 
         static void on_construct(entt::registry& registry, const entt::entity entt);
 
