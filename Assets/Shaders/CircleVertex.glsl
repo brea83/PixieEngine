@@ -35,6 +35,9 @@ void main()
     {
         
         gl_Position = projection * Transform * vec4(vertexPosition, 1.0);
+        OUT.Pos_OS = vertexPosition;
+        OUT.Pos_WS =  vec3(Transform * vec4(vertexPosition, 1.0));
+        OUT.Pos_CS = vec3(view * Transform * vec4(vertexPosition, 1.0));
     }
 
 }

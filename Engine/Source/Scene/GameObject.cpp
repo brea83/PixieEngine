@@ -124,11 +124,14 @@ namespace Pixie
 		{
 	
 			GameObject target = m_Scene->FindGameObjectByGUID(follow->EntityToFollow);
+			if (!target)
+				return glm::vec3(0.0f);
 
 			glm::vec3 targetPos{ 0.0f };
 			if (target.HasCompoenent<SplineComponent>())
 			{
-				follow->AccumulatedTime += deltaTime *moveComponent.Speed;
+				follow->AccumulatedTime += deltaTime * moveComponent.Speed;
+
 				SplineComponent& spline = target.GetComponent<SplineComponent>();
 				targetPos = spline.GetPostionT(follow->AccumulatedTime) + follow->Offset;
 				return targetPos - currentPosition;

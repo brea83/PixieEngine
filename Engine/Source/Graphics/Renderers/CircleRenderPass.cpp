@@ -123,14 +123,18 @@ namespace Pixie
 
     void CircleRenderPass::DrawSplineDebug(entt::registry& registry, glm::mat4& viewMatrix)
     {
+        auto view = registry.view<SplineComponent>();
+        if (view->size() < 1)
+            return;
+
         m_Shader->SetUniformBool("IsBillboard", true);
         glm::mat4 inverseViewBase = glm::inverse(viewMatrix);
         CircleRendererComponent splineCircle = CircleRendererComponent();
         m_Shader->SetUniformFloat("Radius", splineCircle.Radius);
         m_Shader->SetUniformFloat("Fade", splineCircle.Fade);
 
-        CircleRendererComponent pathCircle = CircleRendererComponent();
-        pathCircle.Radius = 0.01f;
+        //CircleRendererComponent pathCircle = CircleRendererComponent();
+        //pathCircle.Radius = 0.01f;
         glm::mat4 identity = glm::mat4(1.0f);
         glm::mat4 pathScale = glm::scale(identity, glm::vec3(0.1f));
 
@@ -177,7 +181,7 @@ namespace Pixie
                 glm::mat4 modelViewMat = viewMatrix * inverseView * pathScale;
 
                 m_Shader->SetUniformMat4("Transform", modelViewMat);
-                pathCircle.MeshResource->Render(*m_Shader);
+                splineCircle.MeshResource->Render(*m_Shader);
             }
 
             
@@ -191,7 +195,7 @@ namespace Pixie
             m_Shader->SetUniformFloat("LineWidth", 1.0f);
             m_Shader->SetUniformVec4("Color", previewColor);
             m_Shader->SetUniformMat4("Transform", modelViewMat);
-            pathCircle.MeshResource->Render(*m_Shader);
+            splineCircle.MeshResource->Render(*m_Shader);
 
         }
     }

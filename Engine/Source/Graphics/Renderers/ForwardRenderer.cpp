@@ -201,7 +201,7 @@ namespace Pixie
 		}
 		else
 		{
-			glPolygonMode(GL_FRONT, GL_FILL);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
 		for (size_t i = 0; i < m_Passes.size(); i++)
