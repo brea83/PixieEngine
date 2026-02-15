@@ -41,6 +41,9 @@ namespace Pixie
 		std::shared_ptr<Shader> m_GridShader{ nullptr };
 		std::shared_ptr<Mesh> m_EditorGrid{ nullptr };
 
+	private:
+		friend class WireframePass;
+
 	};
 
 }

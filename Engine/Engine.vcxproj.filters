@@ -77,6 +77,8 @@
     <ClCompile Include="Source\GameState.cpp" />
     <ClCompile Include="Source\Scene\Player\PlayerInput.cpp" />
     <ClCompile Include="Source\Scene\Components\SplineComponent.cpp" />
+    <ClCompile Include="Source\Graphics\Frustum.cpp" />
+    <ClCompile Include="Source\Graphics\Renderers\WireframePass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\EnTT\entt.hpp" />
@@ -168,6 +170,8 @@
     <ClInclude Include="Source\GameState.h" />
     <ClInclude Include="Source\Scene\Player\PlayerInput.h" />
     <ClInclude Include="Source\Scene\Components\SplineComponent.h" />
+    <ClInclude Include="Source\Graphics\Frustum.h" />
+    <ClInclude Include="Source\Graphics\Renderers\WireframePass.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Dependencies\assimp\assimp-vc143-mtd.lib" />
@@ -188,6 +192,8 @@
     <None Include="..\Assets\Shaders\SimpleDepthFragment.glsl" />
     <None Include="..\Assets\Shaders\CircleFragment.glsl" />
     <None Include="..\Assets\Shaders\CircleVertex.glsl" />
+    <None Include="..\Assets\Shaders\WireframeVertex.glsl" />
+    <None Include="..\Assets\Shaders\WireframeFrag.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\FGEngineSpecializationNotes.txt" />

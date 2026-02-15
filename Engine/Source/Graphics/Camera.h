@@ -1,4 +1,5 @@
 #pragma once
+
 #include <glm/glm.hpp>
 
 namespace Pixie
@@ -18,26 +19,27 @@ namespace Pixie
 		// view matrix is handled by entity's transform component now!
 		//virtual glm::mat4 ViewMatrix() const = 0;
 		// calculates a projection matrix
-		glm::mat4 ProjectionMatrix() const;
+		glm::mat4 CalcProjectionMatrix();
+		glm::mat4 ProjectionMatrix() const { return m_ProjectionMatrix; }
 
 		glm::mat4 PerspectiveProjection() const;
 		glm::mat4 OrthoProjection() const;
 
-		void SetOrthographic(bool value) { m_IsOrthographic = value; }
+		void SetOrthographic(bool value) { m_IsOrthographic = value;  CalcProjectionMatrix(); }
 		bool IsOrthographic() const { return m_IsOrthographic; }
 
-		void SetFov(float fov) { m_Fov = fov; }
+		void SetFov(float fov) { m_Fov = fov;  CalcProjectionMatrix(); }
 		float GetFov() const { return m_Fov; }
 
-		void SetZoom(float amount) { m_ZoomLevel = amount; }
+		void SetZoom(float amount) { m_ZoomLevel = amount;  CalcProjectionMatrix(); }
 		float GetZoom() const { return m_ZoomLevel; }
 
-		void SetAspectRatio(float aspect) { m_AspectRatio = aspect; }
+		void SetAspectRatio(float aspect) { m_AspectRatio = aspect; CalcProjectionMatrix(); }
 		float GetAspectRatio() const { return m_LockAspectRatio ? m_ManualRatio : m_AspectRatio; }
 		void LockAspectRatio(bool value = true) { m_LockAspectRatio = value; }
 		bool IsAspectRatioLocked() const { return m_LockAspectRatio; }
 
-		void SetNearFar(float nearPlane, float farPlane) { m_Near = nearPlane; m_Far = farPlane; }
+		void SetNearFar(float nearPlane, float farPlane) { m_Near = nearPlane; m_Far = farPlane;  CalcProjectionMatrix();}
 		glm::vec2 GetNearFar() const { return glm::vec2(m_Near, m_Far); }
 
 		bool operator ==(const Camera& other)
@@ -69,4 +71,5 @@ namespace Pixie
 		friend class DetailsViewPanel;
 	};
 
+	
 }

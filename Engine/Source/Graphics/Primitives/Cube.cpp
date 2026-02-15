@@ -13,10 +13,10 @@ namespace Pixie
 		{
 			m_Vertices = {
 				// back face
-				Vertex{{-0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, { 1.0f, 0.0f }}, // top left
-				Vertex{{ 0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 1.0f}, { 1.0f, 1.0f }}, // top right
-				Vertex{{-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, { 0.0f, 1.0f }}, // bottom left
-				Vertex{{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, { 0.0f, 0.0f }}, // bottom right
+				Vertex{{-0.5f,  0.5f, -0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, { 1.0f, 0.0f }}, // top left
+				Vertex{{ 0.5f,  0.5f, -0.0f}, {1.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 1.0f}, { 1.0f, 1.0f }}, // top right
+				Vertex{{-0.5f, -0.5f, -0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, { 0.0f, 1.0f }}, // bottom left
+				Vertex{{ 0.5f, -0.5f, -0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, { 0.0f, 0.0f }}, // bottom right
 
 				// front face
 				Vertex{{-0.5f,  0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, { 0.0f, 0.0f }}, // top left

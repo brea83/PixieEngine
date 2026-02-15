@@ -91,8 +91,13 @@ namespace Pixie
 
 	glm::vec2 EngineContext::GetViewportSize() const
 	{
-		if(m_EditorEnabled)
-			return m_ImGuiLayer->GetViewportSize();
+		if (m_EditorEnabled && m_ImGuiLayer != nullptr)
+		{
+			glm::vec2 size = m_ImGuiLayer->GetViewportSize();
+			size.x = glm::max(1.0f, size.x);
+			size.y = glm::max(1.0f, size.y);
+			return size;
+		}
 		
 		return GetWindowSize();
 	}
@@ -265,18 +270,18 @@ namespace Pixie
 			return true;
 		}
 		m_IsMinimized = false;
+		return false;
 
 		//glm::vec2 viewportSize;
-		if (m_EditorEnabled && m_ImGuiLayer != nullptr)
-		{
+		//if (m_EditorEnabled && m_ImGuiLayer != nullptr)
+		//{
 			//viewportSize = m_ImGuiLayer->GetViewportSize();
 			// resize gets handled by imgui ?
-			return false;
-		}
+		//}
 
 		//viewportSize = glm::vec2(width, height);
-		m_ActiveScene->ForwardAspectRatio((float)width, (float)height);
-		return true;
+		//m_ActiveScene->ForwardAspectRatio((float)width, (float)height);
+		//return true;
 	}
 
 	bool EngineContext::OnWindowClosed(WindowClosedEvent& event)

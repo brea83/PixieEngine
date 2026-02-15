@@ -1136,7 +1136,10 @@ namespace Pixie
 	{
 		float labelWidth = (ImGui::GetFontSize() * 10.0f);
 		std::vector<std::string> labels{ "FoV", "Near Plane", "Far Plane" };
-		std::vector<float*> values{ &camera.m_Fov, &camera.m_Near, &camera.m_Far };
+		float fov = camera.m_Fov;
+		float nearPlane = camera.m_Near;
+		float farPlane = camera.m_Far;
+		std::vector<float*> values{ &fov, &nearPlane, &farPlane };
 		std::vector<float> resetValues{ 1.0f, 0.1f, 100.0f };
 		if (ImGui::BeginTable("##CameraProperties", 2))
 		{
@@ -1153,7 +1156,29 @@ namespace Pixie
 
 				// the values
 				ImGui::TableSetColumnIndex(1);
-				ImGui::DragFloat("##Value", values[i], 0.01f);
+				if (ImGui::DragFloat("##Value", values[i], 0.01f))
+				{
+					switch (i)
+					{
+						case 0:
+						{
+							camera.SetFov(fov);
+							break;
+						}
+						case 1:
+						{
+							camera.SetNearFar(nearPlane, farPlane);
+							break;
+						}
+						case 2:
+						{
+							camera.SetNearFar(nearPlane, farPlane);
+							break;
+						}
+						default:
+							break;
+					}
+				}
 				ImGui::SameLine();
 				if (ImGui::Button("Reset"))
 				{

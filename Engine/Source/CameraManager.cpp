@@ -17,6 +17,8 @@ namespace Pixie
             Entity entity = m_Scene->CreateEntity("Editor Camera");
 
             m_EditorCamera = EditorCamera(entity, m_Scene);
+
+            entity.GetComponent<CameraComponent>().Cam.SetNearFar(1.0f, 100.0f);
         }
 
         m_ActiveCamera = m_EditorCamera;
@@ -80,25 +82,76 @@ namespace Pixie
 
     bool CameraManager::OnEvent(Event& event)
     {
-        //EventDispatcher dispatcher{ event };
-        //dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FUNCTION(CameraManager::OnKeyPressed));
+        EventDispatcher dispatcher{ event };
+        dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FUNCTION(CameraManager::OnKeyPressed));
+        dispatcher.Dispatch<KeyReleasedEvent>(BIND_EVENT_FUNCTION(CameraManager::OnKeyReleased));
+        dispatcher.Dispatch<WindowResizedEvent>(BIND_EVENT_FUNCTION(CameraManager::OnWindowResized));
+        dispatcher.Dispatch<MouseMovedEvent>(BIND_EVENT_FUNCTION(CameraManager::OnMouseMovedEvent));
+        dispatcher.Dispatch<MouseScrolledEvent>(BIND_EVENT_FUNCTION(CameraManager::OnMouseScrolled));
+        dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FUNCTION(CameraManager::OnMouseButtonPressed));
 
-        if (!event.Handled)
-        {
-            CameraController* controllerComponent = m_Scene->GetRegistry().try_get<CameraController>(m_ActiveCamera);
-            if (!controllerComponent) 
-                return false;
-
-            if (m_Scene->GetSceneState() != SceneState::Edit && controllerComponent->IsEditorOnly())
-                return false;
-
-            return controllerComponent->OnEvent(event);
-        }
-
-        return false;
+        return event.Handled;
     }
 
     bool CameraManager::OnKeyPressed(KeyPressedEvent& event)
+    {
+        entt::registry& registry = m_Scene->GetRegistry();
+        CameraController* controller = registry.try_get<CameraController>(m_ActiveCamera);
+        if (!controller
+            || (m_Scene->GetSceneState() != SceneState::Edit && controller->IsEditorOnly()))
+            return false;
+
+        return controller->OnKeyPressed(event);
+    }
+
+    bool CameraManager::OnKeyReleased(KeyReleasedEvent& event)
+    {
+        entt::registry& registry = m_Scene->GetRegistry();
+        CameraController* controller = registry.try_get<CameraController>(m_ActiveCamera);
+        if (!controller
+            || (m_Scene->GetSceneState() != SceneState::Edit && controller->IsEditorOnly()))
+            return false;
+
+        return controller->OnKeyReleased(event);
+    }
+
+    bool CameraManager::OnWindowResized(WindowResizedEvent& event)
+    {
+        entt::registry& registry = m_Scene->GetRegistry();
+        CameraComponent* camComponent = registry.try_get<CameraComponent>(m_ActiveCamera);
+        if (!camComponent)
+            return false;
+
+        // get the actual viewport size as the window event is the whole raw window size not the active viewport
+        glm::vec2 size = EngineContext::GetEngine()->GetViewportSize();
+        camComponent->SetAspectRatio(size.x, size.y);
+
+        return false; // don't consume the event, might want other things to act on window resize
+    }
+
+    bool CameraManager::OnMouseMovedEvent(MouseMovedEvent& event)
+    {
+        entt::registry& registry = m_Scene->GetRegistry();
+        CameraController* controller = registry.try_get<CameraController>(m_ActiveCamera);
+        if (!controller
+            || (m_Scene->GetSceneState() != SceneState::Edit && controller->IsEditorOnly()))
+            return false;
+
+        return controller->OnMouseMoved(event);
+    }
+
+    bool CameraManager::OnMouseScrolled(MouseScrolledEvent& event)
+    {
+        entt::registry& registry = m_Scene->GetRegistry();
+        CameraController* controller = registry.try_get<CameraController>(m_ActiveCamera);
+        if (!controller
+            || (m_Scene->GetSceneState() != SceneState::Edit && controller->IsEditorOnly()))
+            return false;
+
+        return controller->OnMouseScrolled(event);
+    }
+
+    bool CameraManager::OnMouseButtonPressed(MouseButtonPressedEvent& event)
     {
         return false;
     }
@@ -167,6 +220,11 @@ namespace Pixie
         if (m_DefaultCamera != entt::null && m_DefaultCamera != entt::tombstone) return ; // early out b/c we have default already
 
         GameObject cameraObject = GameObject(entity, m_Scene);
+
+        if (!cameraObject)
+            return;
+        m_Frustums[entity] = Frustum();
+        m_Frustums[entity].Recalculate(cameraComponent.Cam.ProjectionMatrix(), glm::inverse(cameraObject.GetTransform().GetObjectToWorldMatrix()));
 
         if (cameraObject.TryGetComponent<HeirarchyComponent>() == nullptr) return; // early out b/c this is an editor not scene camera
 
@@ -242,11 +300,11 @@ namespace Pixie
         if (!activeCam) return; 
 
         //cam controller tracks viewport size for move speed stuff
-        CameraController& controller = activeCam.GetComponent<CameraController>();
-        controller.OnViewportSizeChange(width, height);
+        /*CameraController& controller = activeCam.GetComponent<CameraController>();
+        controller.OnViewportSizeChange(width, height);*/
 
         // cam component.cam for rendering viewport size 
-        activeCam.GetComponent<CameraComponent>().Cam.SetAspectRatio(width / height);
+        activeCam.GetComponent<CameraComponent>().SetAspectRatio(width, height);
     }
 
     void CameraManager::SetActiveCamera(GameObject& gameObject)

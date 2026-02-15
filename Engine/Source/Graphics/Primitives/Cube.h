@@ -15,6 +15,8 @@ namespace Pixie
 		void Render(Shader& currentShader) override;
 	protected:
 		void Init() override;
+	private:
+		friend class WireframePass;
 	};
 
 }

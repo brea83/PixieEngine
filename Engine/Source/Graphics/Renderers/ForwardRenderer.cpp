@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include "ForwardRenderPass.h"
 #include "CircleRenderPass.h"
+#include "WireframePass.h"
 #include "ShadowPass.h"
 #include "EngineContext.h"
 #include "GlfwWrapper.h"
@@ -26,6 +27,9 @@ namespace Pixie
 
 		std::unique_ptr<CircleRenderPass> circlePass = std::make_unique<CircleRenderPass>();
 		m_Passes.push_back(std::move(circlePass));
+
+		std::unique_ptr<WireframePass> wireframePass = std::make_unique<WireframePass>();
+		m_Passes.push_back(std::move(wireframePass));
 
 		FrameBufferSpecification frameBufferData;
 		glm::vec2 viewportSize = EngineContext::GetEngine()->GetViewportSize();
@@ -121,8 +125,8 @@ namespace Pixie
 			m_ShadowCamera->SetOrthographic(mainCam.IsOrthographic());
 			m_ShadowCamera->SetNearFar(0.01f, 35.0f);
 			glm::mat4 shadowProjection = m_ShadowCamera->ProjectionMatrix();
-			std::vector< glm::vec4> frustumWS = GetFrustumCornersWS(shadowProjection, viewMatrix);
-			glm::vec3 frustumCenter = GetFrustumCenter(frustumWS);
+			std::vector< glm::vec4> frustumWS = Frustum::CalcFrustumCornersWS(shadowProjection, viewMatrix);
+			glm::vec3 frustumCenter = Frustum::CalcFrustumCenter(frustumWS);
 
 
 			glm::vec2 viewportSize = EngineContext::GetEngine()->GetViewportSize();
@@ -278,42 +282,5 @@ namespace Pixie
 		return renderBuffers;
 	}
 
-	std::vector<glm::vec4> ForwardRenderer::GetFrustumCornersWS(const glm::mat4& projection, const glm::mat4& view)
-	{
-		const auto inverse = glm::inverse(projection * view);
-
-		std::vector<glm::vec4> frustumCorners;
-		for (int x = 0; x < 2; x++)
-		{
-			for (int y = 0; y < 2; y++)
-			{
-				for (int z = 0; z < 2; z++)
-				{
-					glm::vec4 point
-					{
-						2.0f * x - 1.0f,
-						2.0f * y - 1.0f,
-						2.0f * z - 1.0f,
-						1.0f
-					};
-
-					point = inverse * point;
-
-					frustumCorners.push_back(point / point.w);
-				}
-			}
-		}
-
-		return frustumCorners;
-	}
-	glm::vec3 ForwardRenderer::GetFrustumCenter(const std::vector<glm::vec4>& frustumCorners)
-	{
-		glm::vec3 center{ 0.0f };
-		for (const auto& point : frustumCorners)
-		{
-			center += glm::vec3(point);
-		}
-
-		return center /= (float)frustumCorners.size();
-	}
+	
 }

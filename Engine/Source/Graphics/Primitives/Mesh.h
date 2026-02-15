@@ -82,6 +82,7 @@ namespace Pixie
 		//methods
 		void Init() override;
 
+		friend class WireframePass;
 	};
 
 }

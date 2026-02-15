@@ -30,9 +30,9 @@ namespace Pixie
 		//new serialization of GameObject uses fileWriter->WriteRaw(object.GetComponent<CameraController>());
 		// so this is for legacy reading of old save files, or to be repurposed
 
-		SerializableComponentID readID;
+		/*SerializableComponentID readID;
 		stream->ReadRaw<SerializableComponentID>(readID);
-		if (readID != SerializableComponentID::CameraController) return false;
+		if (readID != SerializableComponentID::CameraController) return false;*/
 		return true;
 	}
 
@@ -78,10 +78,10 @@ namespace Pixie
 
 			bool bMouseHasMoved = m_MouseDelta.x != 0 && m_MouseDelta.y != 0;
 
-			if (bMouseHasMoved && Input::IsMouseButtonPressed(Inputs::Mouse::ButtonMiddle))
-				MousePan(deltaTime, transform);
-			else if (bMouseHasMoved && Input::IsMouseButtonPressed(Inputs::Mouse::ButtonLeft))
-				MouseRotate(deltaTime, transform);
+			//if (bMouseHasMoved && Input::IsMouseButtonPressed(Inputs::Mouse::ButtonMiddle))
+				//MousePan(deltaTime, transform);
+			//else if (bMouseHasMoved && Input::IsMouseButtonPressed(Inputs::Mouse::ButtonLeft))
+				//MouseRotate(deltaTime, transform);
 			//else if (bMouseHasMoved && Input::IsMouseButtonPressed(Inputs::Mouse::ButtonRight))
 
 
@@ -298,10 +298,10 @@ namespace Pixie
 		return true;
 	}
 
-	bool CameraController::OnMouseButtonPressed(MouseButtonPressedEvent& event)
-	{
-		return false;
-	}
+	//bool CameraController::OnMouseButtonPressed(MouseButtonPressedEvent& event)
+	//{
+	//	return false;
+	//}
 
 	/*bool CameraController::HandleMouseLook(TransformComponent* transform, float xOffset, float yOffset, float deltaTime)
 	{
@@ -330,11 +330,11 @@ namespace Pixie
 			m_FirstMouseFrame = false;
 	}
 
-	void CameraController::OnViewportSizeChange(float width, float height)
-	{
-		m_ViewportSize.x = width;
-		m_ViewportSize.y = height;
-	}
+	//void CameraController::OnViewportSizeChange(float width, float height)
+	//{
+	//	m_ViewportSize.x = width;
+	//	m_ViewportSize.y = height;
+	//}
 
 	bool CameraController::OnMouseScrolled(MouseScrolledEvent& event)
 	{
@@ -345,23 +345,24 @@ namespace Pixie
 		return false;
 	}
 
-	bool CameraController::OnWindowResized(WindowResizedEvent& event)
-	{
+	//bool CameraController::OnWindowResized(WindowResizedEvent& event)
+	//{
 
-		return false;
-	}
+	//	return false;
+	//}
+
 
 	// constant values based on Cherno's hazel engine
-	glm::vec2 CameraController::PanSpeed() const
-	{
-		float x = std::min(m_ViewportSize.x / 1000.0f, 2.4f); // max = 2.4f
-		float xFactor = 0.0366f * (x * x) - 0.1778f * x + 0.3021f;
+	//glm::vec2 CameraController::PanSpeed() const
+	//{
+	//	float x = std::min(m_ViewportSize.x / 1000.0f, 2.4f); // max = 2.4f
+	//	float xFactor = 0.0366f * (x * x) - 0.1778f * x + 0.3021f;
 
-		float y = std::min(m_ViewportSize.y / 1000.0f, 2.4f); // max = 2.4f
-		float yFactor = 0.0366f * (y * y) - 0.1778f * y + 0.3021f;
+	//	float y = std::min(m_ViewportSize.y / 1000.0f, 2.4f); // max = 2.4f
+	//	float yFactor = 0.0366f * (y * y) - 0.1778f * y + 0.3021f;
 
-		return { xFactor, yFactor };
-	}
+	//	return { xFactor, yFactor };
+	//}
 
 	// constant values based on Cherno's hazel engine
 	float CameraController::ZoomSpeed() const
@@ -373,7 +374,7 @@ namespace Pixie
 		return speed;
 	}
 
-	void CameraController::MousePan(float deltaTime, Pixie::TransformComponent& transform)
+	/*void CameraController::MousePan(float deltaTime, Pixie::TransformComponent& transform)
 	{
 		glm::vec2 speed = PanSpeed() * deltaTime;
 		m_FocalPoint += -transform.Right() * m_MouseDelta.x * speed.x * m_Distance;
@@ -381,7 +382,7 @@ namespace Pixie
 
 		m_MouseDelta = glm::vec2(0.0f, 0.0f);
 		m_FocalPointDirty = true;
-	}
+	}*/
 
 	void CameraController::MouseRotate(float deltaTime, Pixie::TransformComponent& transform)
 	{

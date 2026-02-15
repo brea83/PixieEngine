@@ -1,9 +1,12 @@
 #pragma once
 //#include "Scene/GameObject.h"
+#include "Events/ApplicationEvent.h"
 #include "Events/KeyboardEvents.h"
 #include "Events/MouseEvents.h"
-#include "EnTT/entt.hpp"
+#include "Graphics/Frustum.h"
+#include <EnTT/entt.hpp>
 #include <glm/glm.hpp>
+#include <unordered_map>
 
 namespace Pixie
 {
@@ -45,6 +48,8 @@ namespace Pixie
 		void SetDefaultCamera(GameObject& gameObject);
 		void SetEditorCamActive();
 
+		std::unordered_map<entt::entity, Frustum>& GetFrustums() { return m_Frustums; }
+
 		static glm::mat4 GetProjectionOutView(Camera& inCamera, TransformComponent& inTransform, glm::mat4& outViewMatrix);
 
 		void FocusOnGameObject(std::shared_ptr<GameObject> targetObject, bool bRotateOnly = false);
@@ -59,7 +64,14 @@ namespace Pixie
 		entt::entity m_DefaultCamera{ entt::null };
 		entt::entity m_EditorCamera{ entt::null };
 
+		std::unordered_map<entt::entity, Frustum> m_Frustums;
+
 		bool OnKeyPressed(KeyPressedEvent& event);
+		bool OnKeyReleased(KeyReleasedEvent& event);
+		bool OnWindowResized(WindowResizedEvent& event);
+		bool OnMouseMovedEvent(MouseMovedEvent& event);
+		bool OnMouseScrolled(MouseScrolledEvent& event);
+		bool OnMouseButtonPressed(MouseButtonPressedEvent& event);
 
 		// offsets for FocusOnGameObject
 		glm::vec3 m_TargetPosOffset{ 0.0f, 7.0f, -10.0f };

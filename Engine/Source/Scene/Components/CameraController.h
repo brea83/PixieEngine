@@ -55,7 +55,7 @@ namespace Pixie
 		glm::vec3 GetFocalPoint()const { return m_FocalPoint; }
 		float GetFocalPointDistance() const { return m_Distance; }
 
-		void OnViewportSizeChange(float width, float height);
+		//void OnViewportSizeChange(float width, float height);
 
 
 		static void Serialize(StreamWriter* stream, const CameraController& component);
@@ -93,23 +93,25 @@ namespace Pixie
 		bool OnKeyPressed(KeyPressedEvent& event);
 		bool OnKeyReleased(KeyReleasedEvent& event);
 		bool OnMouseMoved(MouseMovedEvent& event);
-		bool OnMouseButtonPressed(MouseButtonPressedEvent& event);
+		//bool OnMouseButtonPressed(MouseButtonPressedEvent& event);
 		bool OnMouseScrolled(MouseScrolledEvent& event);
-		bool OnWindowResized(WindowResizedEvent& event);
+		//bool OnWindowResized(WindowResizedEvent& event);
 
 		void Fly(float deltaTime, CameraComponent& camComponent, TransformComponent& transform);
 		void UpdateMouseMode(float deltaTime, TransformComponent& transform);
 
-		void MousePan(float deltaTime, TransformComponent& transform);
+		//void MousePan(float deltaTime, TransformComponent& transform);
 		void MouseRotate(float deltaTime, TransformComponent& transform);
 		void MouseZoom(float deltaTime, TransformComponent& transform);
 		void MouseZoom(CameraComponent& camera);
 
-		glm::vec2 PanSpeed() const;
+		//glm::vec2 PanSpeed() const;
 		float RotationSpeed() const { return 0.8f; }
 
 
 		float ZoomSpeed() const;
+
+		friend class CameraManager;
 	};
 
 }

@@ -341,7 +341,9 @@ namespace Pixie
 
 			if (id == SerializableComponentID::CameraComponent)
 			{
-				fileReader->ReadRaw(object.GetOrAddComponent<CameraComponent>());
+				CameraComponent& camera = object.GetOrAddComponent<CameraComponent>();
+				fileReader->ReadRaw(camera);
+				camera.Cam.SetFov(camera.Cam.GetFov());
 				continue;
 			}
 
